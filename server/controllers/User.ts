@@ -15,7 +15,6 @@ class UserController{
     }
     public async mine(req:Request, res:Response):Promise<Response>{
         const user = await User.findOne({_id:req.query.id})
-        console.log(user)
         return res.json(user)
     }
     public async pushTrade(req:Request, res:Response):Promise<Response>{
