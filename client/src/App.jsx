@@ -1,10 +1,15 @@
 import logo from "./logo.svg";
 import "./App.css";
 import Header from "./components/Header";
+import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import { Backdrop, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+const socket = io("http://localhost:3001");
 
+// socket.on("connection", () => {
+//   console.log("IO connected!");
+// });
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
