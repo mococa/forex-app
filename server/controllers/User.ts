@@ -10,11 +10,14 @@ class UserController{
         return res.json(user)
     }
     public async update(req:Request, res:Response):Promise<Response>{
-        const user = await User.findOneAndUpdate({_id:req.body._id}, req.body).catch(err=>({error:Object.keys(err.errors).map(x=>(err.errors[x].message))}))
+        if(req.body.firstName === "" || req.body.timezone === "") return res.json({error: "You cannot leave a blank field"})
+        const user = await User.findOneAndUpdate({_id:req.body._id}, req.body).catch(err=>({error:Object.keys(err.errors).map(x=>(err.errors[x].message))})).catch(x=>({error:"Unknown error. Are you logged in?"}))
+        if(!user) return res.json({error:"Could not find user in database"}).status(404)
         return res.json(user)
     }
     public async mine(req:Request, res:Response):Promise<Response>{
-        const user = await User.findOne({_id:req.query.id})
+        const user = await User.findOne({username:req.query.username})
+        if(!user) return res.json({error:"Could not find user in database"}).status(404)
         return res.json(user)
     }
     public async pushTrade(req:Request, res:Response):Promise<Response>{

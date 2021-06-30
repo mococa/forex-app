@@ -49,18 +49,15 @@ mongoose.connect('mongodb://localhost/module1', {
     });
 
 app.get('/', async (req,res)=>{
-    res.json({status:200})
-    
+    res.json({status:200}) 
 })
+
 app.get('/api/users', User.get)
-function checkUser(req:express.Request,res:express.Response,next:any) {
-    if(req.query) return next()
-    if(!User.mine) return res.json({error:"Could not find user in database"}).status(404)
-}
-app.get('/api/user',checkUser, User.mine)
+
+app.get('/api/user',/*checkUser,*/ User.mine)
 app.post('/api/users/create', User.create)
 app.post('/api/push/trade', User.pushTrade)
-app.post('/api/update', User.update)
+app.post('/api/user/update', User.update)
 app.get("/time", async (req,res)=>{
     const response_time = await fetch(
         "https://www.timeapi.io/api/Time/current/zone?timeZone=" +

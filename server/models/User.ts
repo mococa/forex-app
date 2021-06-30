@@ -24,7 +24,7 @@ const UserSchema = new Schema({
 },
     firstName: {type:String, required:[true, 'You need to fill a first name!']},
     balance: {type:Number, default:0},
-    timezone: {type:String, default:"Greenwich"},
+    timezone: {type:String, default:"London"},
     trades:{type:Array, default:[]}
 },{timestamps:true})
 export default model<IUser>('User', UserSchema)
