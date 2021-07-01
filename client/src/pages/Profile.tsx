@@ -77,7 +77,7 @@ const Profile:React.FC<{}> = () =>{
                  color="secondary"
                  style={{marginTop:'20px', minWidth:'120px'}}
                  href="/"
-                 onClick={()=>{setUser({});localStorage.clear()}}>Logout</Button>
+                 onClick={()=>{setUser({trades:[], balance:{usd:0,gbp:0}});localStorage.clear()}}>Logout</Button>
             </Box>
 
         </Box>

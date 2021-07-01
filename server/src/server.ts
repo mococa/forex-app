@@ -91,7 +91,7 @@ app.get('/api/users', User.get)
 
 app.get('/api/user',/*checkUser,*/ User.mine)
 app.post('/api/users/create', User.create)
-app.post('/api/push/trade', User.pushTrade)
+app.post('/api/trade', User.pushTrade)
 app.post('/api/user/update', User.update)
 app.get("/time", async (req,res)=>{
     const response_time = await fetch(

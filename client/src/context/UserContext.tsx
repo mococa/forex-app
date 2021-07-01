@@ -6,12 +6,21 @@ import { Location } from "history";
 type Props = {
     children?: JSX.Element | JSX.Element[],
   };
-
+export interface IBalance{
+  usd:number,
+  gbp:number
+}
+export interface IMyTrades{
+  value: number, // Negative value if buying, positive if selling.
+  from:string,
+  to:string,
+  when:string
+}
 export interface IUser{
     _id ?: string;
-    balance ?: 0;
+    balance: IBalance;
     timezone? : string;
-    trades ?: [];
+    trades: IMyTrades[];
     username ?: string;
     firstName ?: string;
     createdAt ?: string;
@@ -31,7 +40,7 @@ const initialContext: context = {
 
 export const UserContext = createContext<context>(initialContext);
 export const UserProvider = ({children}:Props):JSX.Element =>{
-    const [user, setUser] = useState<IUser>();
+    const [user, setUser] = useState<IUser>({trades:[], balance:{usd:0,gbp:0}});
     const location = useLocation<Location>();
     const history = useHistory();
     

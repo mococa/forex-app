@@ -1,21 +1,28 @@
 import { CastError, Model, model, Schema } from "mongoose";
 import Trade from "./Trade";
 
-interface ITrade extends Document{
+export interface ITrade{
     from:string,
     to:string,
     when:string,
-    profit:number
+    value:number
 }
 //type Unpacked<T> = T extends (infer U)[] ? U : T;
-
-export interface IUser extends Document{
-    firstName:string,
-    balance?:number,
-    timezone:string,
-    trades?: Array<ITrade>
+export interface IBalance{
+  usd:number,
+  gbp:number
 }
-type UserType = IUser & Document;
+export const BalanceSchema = new Schema({
+    usd:{type:Number, min:[0, "You don't have enough US$"]},
+    gbp:{type:Number, min:[0, "You don't have enough £"]}
+})
+export interface IUser{
+    firstName:string,
+    balance:IBalance,
+    timezone:string,
+    trades: ITrade[]
+}
+type UserType = IUser;
 const UserSchema = new Schema({
     username: {type:String, required:[true,'You need to fill a username!'], unique:true,
     //}// validate:{
@@ -28,7 +35,7 @@ const UserSchema = new Schema({
     },*/
 },
     firstName: {type:String, required:[true, 'You need to fill a first name!']},
-    balance: {type:Number, default:10},
+    balance: {type:BalanceSchema, default:{usd:10,gbp:10}},
     timezone: {type:String, default:"London"},
     trades:{type:Array, default:[]}
  },{timestamps:true})

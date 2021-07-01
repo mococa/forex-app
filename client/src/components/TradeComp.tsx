@@ -1,9 +1,13 @@
 import "../App.css";
-import { Button, Box, Typography } from "@material-ui/core"
+import {
+  Button, Box, Typography, Dialog, DialogActions,
+  DialogContent, DialogContentText, DialogTitle
+} from "@material-ui/core"
 import { green, pink } from '@material-ui/core/colors';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, BarChart, Bar, Area, Legend, Tooltip, ComposedChart, ResponsiveContainer } from "recharts";
 import { TradeContext, ITrade } from "../context/TradeContext"
+import { UserContext, IUser, IMyTrades } from "../context/UserContext";
 import { useState, useEffect, useReducer, useContext } from "react";
 const useStyles = makeStyles((theme) => ({
   green: {
@@ -18,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     flexFlow: 'row',
     gap: '1rem',
     placeContent: 'center',
+    marginBottom: '20px'
   },
   chart: {
     margin: "0 auto",
@@ -29,10 +34,15 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TradeComp: React.FC<{}> = () => {
+  interface ICurrencies {
+    from: string,
+    to: string
+  }
   const { trades, invertedTrades } = useContext(TradeContext);
   const classes = useStyles();
-
-  const [default_order, setOrder] = useState({ from: 'GBP', to: 'USD' })
+  const { user, setUser } = useContext(UserContext)
+  const [traded, setTraded] = useState({ traded: false, buy: false, _for: 0 });
+  const [default_order, setOrder] = useState<ICurrencies>({ from: 'GBP', to: 'USD' })
   const [lastTrade, setLastTrade] = useState<ITrade>()
   //const [currentTr, setCurrentTr] = useState<ITrade[] | undefined>(undefined)
   const [currentTr, setCurrentTr] = useReducer((state: ITrade[] | undefined, action: { type: string; trades?: ITrade[] }) => {
@@ -41,19 +51,44 @@ const TradeComp: React.FC<{}> = () => {
       return state
     } else { return state }
   }, [])
-
+  async function makeTrade(buy: boolean) {
+    if (lastTrade && user) {
+      setTraded({ traded: true, buy: buy, _for: buy ? lastTrade.ask : lastTrade?.bid })
+      const tradePayload = {
+        value: buy ? lastTrade.ask * -1 : lastTrade?.bid, // Negative value if buying, positive if selling.
+        from: default_order.from,
+        to: default_order.to,
+        when: lastTrade.ts
+      }
+      const response = await fetch("http://localhost:3001/api/trade",
+        {
+          method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
+          body: JSON.stringify({
+            trade: tradePayload,
+            _id: user._id
+          })
+        });
+      const json = await response.json()
+      if (json.error !== undefined) {
+        alert(json.error)
+      } else {
+        localStorage.setItem('user', JSON.stringify(json))
+        setUser(json as IUser)
+      }
+    }
+  }
 
   //const [currentTrade, setCurrentTrade] = useState<ITrade[]>(trades || [])
   useEffect(() => {
     if (trades && currentTr) setLastTrade(currentTr[currentTr.length - 1])
   }, [trades, currentTr])
   useEffect(() => {
-    //setCurrentTr([])
     if (trades) default_order.from === "GBP" ? setCurrentTr({ type: 'SET_CURRENT', trades: trades }) : setCurrentTr({ type: 'SET_CURRENT', trades: invertedTrades })
   }, [default_order, invertedTrades, trades])
   return (
     <div>
-      {currentTr && currentTr.length ? <>
+      {currentTr && currentTr.length && lastTrade ? <>
+        {traded && showTradeDialog()}
         <Box className={classes.mBottom}>
           <Button title="Switch currencies" variant="outlined"
             onClick={() =>
@@ -63,7 +98,7 @@ const TradeComp: React.FC<{}> = () => {
           </Button>
         </Box>
         <Box>
-          <ResponsiveContainer width="60%" height={300} className={classes.chart}>
+          <ResponsiveContainer width="60%" height={250} className={classes.chart}>
             <ComposedChart data={currentTr} >
               <XAxis tickMargin={10} height={28} dataKey="time" />
               <YAxis tickCount={2} domain={['auto', 'auto']} />
@@ -76,19 +111,42 @@ const TradeComp: React.FC<{}> = () => {
         </Box>
         <Box className={classes.mBottom}>
           <div>
-            <h3>Buy now for {lastTrade && lastTrade['ask']}</h3>
-            <h3>Sell now for {lastTrade && lastTrade['bid']}</h3>
+            <h3>Buy now for {lastTrade && lastTrade['ask']} {default_order.to}</h3>
+            <h3>Sell now for {lastTrade && lastTrade['bid']} {default_order.to}</h3>
           </div>
         </Box>
         <Box className={classes.buttons}>
-          <Button variant="contained" color="secondary">Buy</Button>
-          <Button variant="contained" className={classes.green}>Sell</Button>
+          <Button variant="contained" color="secondary"
+            onClick={() => makeTrade(true)}>Buy</Button>
+          <Button variant="contained" className={classes.green}
+            onClick={() => makeTrade(false)}>Sell</Button>
         </Box>
       </> :
         <h2>Hold on tight while we're collecting some data</h2>
       }
     </div>
   );
+  function showTradeDialog(): JSX.Element {
+    return <Dialog
+      open={traded.traded}
+      onClose={() => setTraded({ ...traded, traded: false })}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">Good {traded.buy ? "one" : "sell"}!</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          You just {traded.buy ? "bought" : "sold"} 1 {default_order.from} for {traded._for} {default_order.to}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setTraded({ ...traded, traded: false })} color="primary">
+          Ok
+        </Button>
+
+      </DialogActions>
+    </Dialog>
+  }
 }
 
 export default TradeComp;
