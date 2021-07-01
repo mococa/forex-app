@@ -6,7 +6,7 @@ import {
   Box,
   IconButton,
 } from "@material-ui/core";
-import { Person } from "@material-ui/icons";
+import { Person,AttachMoney } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../context/UserContext";
 
@@ -39,9 +39,13 @@ const Header:React.FC = () =>{
             <Typography variant="h5" component="a" href="/" style={{color:'white', textDecoration:'none'}}>Forex Application</Typography>
           </Box>
           <Box className={classes.row}>
-            <Typography component="span">
+            
+            <Typography component="span" style={{fontFamily:'unset', display:'flex', alignItems:'center'}} align="center">
+              
               Balance: { moneyfy(user?.balance) }
+              <AttachMoney />
               </Typography>
+              
             <IconButton aria-label="profile" href="/profile">
               <Person fontSize="inherit" style={{ color: "white" }} />
             </IconButton>
