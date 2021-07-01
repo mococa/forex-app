@@ -16,14 +16,14 @@ export interface IUser extends Document{
 }
 const UserSchema = new Schema({
     username: {type:String, required:[true,'You need to fill a username!'], unique:true,validate: {
-        validator: function(v){
+        validator: function(v:any){
             return this.model('User').findOne({ username: v }).then(user => !user)
         },
         message: props => `${props.value} is already used by another user`
     },
 },
     firstName: {type:String, required:[true, 'You need to fill a first name!']},
-    balance: {type:Number, default:0},
+    balance: {type:Number, default:10},
     timezone: {type:String, default:"London"},
     trades:{type:Array, default:[]}
 },{timestamps:true})
