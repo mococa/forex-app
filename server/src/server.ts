@@ -1,11 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose'
 import * as socketio from "socket.io";
-
 import User from '../controllers/User'
 import cors from 'cors'
 import fetch from 'node-fetch'
 import currency from './currency'
+import { SlowBuffer } from 'buffer';
+//import { io } from "socket.io-client";
 
 
 const app = express()
@@ -14,7 +15,9 @@ const server = require('http').createServer(app);
 app.use(cors())
 app.use(express.json())
 
+const WebSocket = require ('ws');
 
+       
 
 const io = require('socket.io')(server, {
     cors: {
@@ -22,20 +25,52 @@ const io = require('socket.io')(server, {
     }
 });
 
+//const findFirstDiff = (str1:any, str2:any):string => str2[[...str1].findIndex((el, index) => el !== str2[index]);
+
+  const reconnectInterval  = 1000
+  console.log("User connected")
+  const token = "siou_xj8kxWEApsya8xVw"
+  
+  const payload = JSON.stringify({
+      userKey:token, 
+      symbol:"GBPUSD"//socket.handshake.query.to.toUpperCase()+socket.handshake.query.from.toUpperCase(),
+  }) 
+      
+  
 io.on("connection", async function(socket: any) {
-    console.log("User connected")
-    const base_currency = await currency(new Date(), socket.handshake.query.from.toString(), socket.handshake.query.to.toString())
-    console.log(base_currency)
+    var ws
+    var connect = function(){
+
+    const ws = new WebSocket ('wss://marketdata.tradermade.com/feedadv');
+  
+    ws.on('open', function open() {
+        ws.send(payload);
+       
+    });
     
-     setInterval(()=>{
-        const floated_currency = parseFloat((base_currency*((Math.random()*8 - 4)/100)).toFixed(5) )
-        const data = {floating:floated_currency, newValue:(floated_currency+base_currency).toFixed(5)}
-        //io.sentMydata = false;
-        //if (!io.sentMydata) {
-        io.emit('trading', data);
-         //   io.sentMydata = true;
-       // }
-     },1000)
+    ws.on('close', function() {
+      console.log('socket close');
+      setTimeout(()=>{connect()}, reconnectInterval)
+    });
+    
+    ws.on('message', function incoming(data: string) {
+       if(data.length > "User Key Used to many times".length /*&&
+        // data !== lastData*/){
+            try{
+                setTimeout(async ()=>{
+                    await io.emit('trading',data);
+                }, 1000)
+                console.log(data)
+            }catch(er){
+                console.log(er)
+            }
+        // lastData = data;
+         }
+    })
+}
+connect()
+    
+        
  });
 
 mongoose.set('useFindAndModify', false);

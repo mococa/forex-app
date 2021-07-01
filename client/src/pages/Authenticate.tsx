@@ -4,6 +4,7 @@ import { Button, TextField, Typography, Box, Select,InputLabel,MenuItem, IconBut
 import { makeStyles } from "@material-ui/core/styles";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import { UserContext, IUser } from "../context/UserContext";
+import { ThemeContext, ITheme } from "../context/ThemeContext";
 import { Location } from "history";
 import {useHistory  } from 'react-router-dom'
 
@@ -32,8 +33,9 @@ const Authencticate:React.FC<{}> = () =>{
     const [username, setUsername] = useState<any>("usertest");
     const [firstName, setFirstName] = useState<any>("");
     const [timeZone, setTimeZone] = useState<any>("Greenwich");
-
+    const {theme, setTheme} = useContext(ThemeContext);
     const {user, setUser} = useContext(UserContext);
+
     const history = useHistory();
     async function login(){
       

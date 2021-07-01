@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import { io, Socket } from "socket.io-client";
+
 import { UserContext } from "../context/UserContext";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -20,9 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home:React.FC<{}> = () =>{
-    interface Props{
-        socket:Socket
-    }
+    
     
   interface IUser{
     "_id" : string,
@@ -39,11 +37,6 @@ const Home:React.FC<{}> = () =>{
     dateTime:string
   }
 
-  const socket:Socket = io("http://localhost:3001", {
-    query: { from: "usd", to: "gbp" },
-    transports: ["websockets", "polling"],
-  });
-  socket.on("trading", (data) => {/*console.log(data)*/});
   const classes = useStyles();
   const {user} = useContext(UserContext);
   const [time, setTime] = useState<ITime>();
@@ -54,10 +47,20 @@ const Home:React.FC<{}> = () =>{
       const response_time = await fetch(url_fetch);
       const _time = await response_time.json();
       console.log(_time);
-      setTime(_time);
+
+      
+      const lsRAW:string|null = localStorage.getItem('user') as string|null
+      const lsUser = lsRAW ?  JSON.parse(lsRAW) : {}
+      if(_time === "Invalid Timezone" && lsUser.timezone){
+        //alert(101)
+        setTime({dateTime:lsUser.timezone});
+      }else{
+        setTime(_time);
+      }
+      
     }
     fetch_data();
-  }, [user?.timezone]);
+  }, [user]);
   function greetings() {
     if(time === undefined) return ""
     const now = parseInt(
@@ -83,10 +86,10 @@ const Home:React.FC<{}> = () =>{
           <Header/>
           <Container>
             <Box m={2}>
-              <Typography component="h4">
+              <Typography variant="h4">
                 {greetings()}, {user?.firstName}
               </Typography>
-              <Typography component="h6">
+              <Typography variant="h6">
                 {time && new Date(time['dateTime'])
                   .toLocaleTimeString(navigator.language, {
                     hour: "2-digit",
