@@ -3,10 +3,13 @@ import User from '../models/User';
 class UserController{
     public async get(req:Request, res:Response):Promise<Response>{
         const users = await User.find()
+        
         return res.json(users)
     }
     public async create(req:Request, res:Response):Promise<Response>{
-        const user = await User.create(req.body).catch(err=>({error:Object.keys(err.errors).map(x=>(err.errors[x].message))}))
+        const user = await User.create(req.body).catch(function(err){
+            return { error:Object.keys(err.errors).map(x=>(err.errors[x].message)) }
+        });
         return res.json(user)
     }
     public async update(req:Request, res:Response):Promise<Response>{
