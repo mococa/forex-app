@@ -26,40 +26,22 @@ class UserController {
         return res.json(user)
     }
     public async pushTrade(req: Request, res: Response): Promise<Response> {
-        const { trade, _id } = req.body
-        // User.updateOne({ _id: _id },
-        //     {
-        //         $push: { trades: trade },
-        //         $inc: { [`balance.${trade.from.toLowerCase()}`]: trade.value },
-        //     },
-        //     {},
-        //     ((err,docs)=>{
-        //         console.log(err)
-        //         console.log(docs)
-        //     })
-        // )
-        // const user = await User
-        //     .findOneAndUpdate(
-        //         { _id: _id },
-        //         {
-        //             $push: { trades: trade },
-        //             $inc: { [`balance.${trade.from.toLowerCase()}`]: trade.value },
-        //         },
-        //         {
-        //             new:true
-        //         }
-        //     ).catch(err => err)
-
+        const { trade, _id, buy } = req.body
+        trade.buy = buy;
+       
         const user = await User.findOne({_id:_id})
         if (!user) return res.status(404).json({ error: "User not found. Please reauthenticate yourself." })
-        user.balance.usd += trade.value
+        user.balance[trade.to.toLowerCase()] += trade.value
+        user.balance[trade.from.toLowerCase()] += buy ? 1 : -1
         user.trades.push(trade as ITrade)
-        const err = user.validateSync();
+        const err = user.validateSync() as any;
         if(err){
             return res.json(
-               {errors:Object.keys(err.errors)
+               {errors:Object.keys(err['errors'])
                .filter(x=>!x.includes('message') && x!=='name' && !x.includes('.'))
-               .map((x)=>err.errors[x]['errors'][Object.keys(err.errors[x]['errors'])[0]].message)
+               .map((x:string)=>{
+                   return err['errors'][x]['errors'][Object.keys(err['errors'][x]['errors'])[0]].message
+                })
             }).status(500)
         }else{
             user.save({validateBeforeSave:false})

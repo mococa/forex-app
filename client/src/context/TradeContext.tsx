@@ -14,6 +14,14 @@ export interface ITrade {
   mid:number;
   time?:string;
 }
+export interface IMyTrade {
+  value: number,
+  from: string,
+  to: string,
+  when: string,
+  buy: boolean,
+  tradeAtTime:ITrade
+}
 interface tradeContext {
     trades?: ITrade[];
     invertedTrades?: ITrade[];

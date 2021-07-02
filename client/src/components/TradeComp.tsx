@@ -58,14 +58,16 @@ const TradeComp: React.FC<{}> = () => {
         value: buy ? lastTrade.ask * -1 : lastTrade?.bid, // Negative value if buying, positive if selling.
         from: default_order.from,
         to: default_order.to,
-        when: lastTrade.ts
+        when: lastTrade.ts,
+        tradeAtTime: lastTrade
       }
       const response = await fetch("http://localhost:3001/api/trade",
         {
           method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
           body: JSON.stringify({
             trade: tradePayload,
-            _id: user._id
+            _id: user._id,
+            buy
           })
         });
       const json = await response.json()

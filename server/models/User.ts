@@ -5,7 +5,8 @@ export interface ITrade{
     from:string,
     to:string,
     when:string,
-    value:number
+    value:number,
+    buy:boolean
 }
 //type Unpacked<T> = T extends (infer U)[] ? U : T;
 export interface IBalance{

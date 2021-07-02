@@ -1,14 +1,18 @@
 import "../App.css";
 import { useState, useContext, useEffect } from "react";
-import { UserContext } from "../context/UserContext";
+import { IMyTrades, UserContext } from "../context/UserContext";
 import Header from '../components/Header'
 import {TextField, Typography, Button, Box,Select,InputLabel,MenuItem   } from "@material-ui/core"
+import { PreviousTrades } from "../components/PreviousTrades";
+import { IMyTrade } from "../context/TradeContext";
+
 const Profile:React.FC<{}> = () =>{
     const {user,setUser} = useContext(UserContext)
     console.log(user)
   const [timeZone, setTimeZone] = useState<string | unknown>('')
   const [firstName, setFirstName] = useState('')
   const [loaded, setLoaded] = useState(false)
+  const [showPrevTrades, setShowPrevTrades] = useState(false);
 
   useEffect(() => {
     console.log("done!")
@@ -67,8 +71,11 @@ const Profile:React.FC<{}> = () =>{
                     style={{marginTop:'20px', minWidth:'200px'}}
                     onClick={async()=>await update()}>Update</Button>
             <Box>
-                <Button variant="contained" style={{marginTop:'20px', minWidth:'200px'}} href="/">My previous trades</Button>
+                <Button variant="contained"
+                 style={{marginTop:'20px', minWidth:'200px'}}
+                 onClick={()=>setShowPrevTrades(!showPrevTrades)}>{showPrevTrades ? "HIDE PREVIOUS TRADES" : "MY PREVIOUS TRADES"}</Button>
             </Box>
+            {showPrevTrades && user && <PreviousTrades data={user?.trades as IMyTrade[]}/>}
             <Box>
                 <Button style={{marginTop:'20px', minWidth:'120px'}} href="/">Voltar</Button>
             </Box>
