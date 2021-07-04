@@ -11,6 +11,7 @@ export interface IWallet{
 export interface IUser{
     _id?:string,
     firstName:string,
+    email:string,
     wallet:IWallet,
     timezone:string,
     trades: ITrade[],
@@ -24,7 +25,7 @@ interface UserModel extends Omit<IUser, '_id'>, Document{}
 const UserSchema = new Schema({
     username: {type:String, required:[true,'You need to fill a username!'], unique:true},
     email:{type:String, required:[true, "You need to fill your e-mail"], unique:true},
-    password:{type:String, required:true},
+    password:{type:String, required:[true, "You need to fill your password"]},
     firstName: {type:String, required:[true, 'You need to fill a first name!']},
     wallet: { 
         USD:{type:Number, default:10, min:[0, "You don't have enough money for this trade"]}, 
@@ -52,6 +53,5 @@ UserSchema.pre<UserModel>('save', async function():Promise<void>{
         console.error(`Error hashing password for user ${this.username}`)
     }
 })
-
 
 export default model<UserModel>('User', UserSchema)

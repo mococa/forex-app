@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 interface Props {
     //children?: JSX.Element | JSX.Element[],
-    text: string | number | undefined,
+    text: string | number | JSX.Element |undefined,
+    textHeader?: JSX.Element | string
     content?: JSX.Element | JSX.Element[],
     anchorOrigin?: {
         vertical: 'bottom' | 'center' | 'top' | number,
@@ -21,7 +22,7 @@ interface Props {
     }
 };
 
-export const Hoverable: React.FC<Props> = ({ children, text, content, anchorOrigin, transformOrigin }): JSX.Element => {
+export const Hoverable: React.FC<Props> = ({ children, text, textHeader, content, anchorOrigin, transformOrigin }): JSX.Element => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -59,7 +60,10 @@ export const Hoverable: React.FC<Props> = ({ children, text, content, anchorOrig
                 transformOrigin={transformOrigin ? transformOrigin : default_values.transformOrigin}
                 onClose={handlePopoverClose}
                 disableRestoreFocus>
-                <pre><Typography>{text}</Typography></pre>
+                {textHeader && textHeader}
+                <pre>
+                    <Typography>{text}</Typography>
+                </pre>
                 {content && content}
 
             </Popover>

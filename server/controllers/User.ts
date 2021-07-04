@@ -3,8 +3,10 @@ import { isValidObjectId, ObjectId } from "mongoose";
 import { ICoins, ITrade } from "../models/Trade";
 import User, { IWallet, IUser } from '../models/User';
 import AuthService from "../services/auth_service";
+import Email from "../services/email-sender";
 
 enum errors{
+    ALREADY_EXISTS="User already exists",
     NOT_FOUND="Could not find user in database",
     NOT_VERIFIED="User is not verified. Please, check your email.",
     WRONG_USER_OR_PASSWORD="Username or password is invalid",
@@ -18,13 +20,14 @@ class UserController {
         const users = await User.find()
         return res.json(users)
     }
-    public async verify(req: Request, res: Response): Promise<Response> {
+    public async verify(req: Request, res: Response): Promise<Response | void> {
         if(!req.params.id || !isValidObjectId(req.params.id)) return res.json({error:errors.NOT_FOUND}).status(404)
         const user = await User.findOne({_id:req.params.id})
         if(!user) return res.json({error:errors.NOT_FOUND}).status(404)
         user.verified = true;
         await user.save({ validateBeforeSave: false })
-        return res.json({validated:true}).status(200)
+        return res.redirect("http://localhost:3000/confirmed")
+        //return res.json({validated:true}).status(200)
     }
     public async checkVerified(req: Request, res: Response, next:NextFunction): Promise<Response | NextFunction | void> {
         const {username} = req.query
@@ -40,7 +43,26 @@ class UserController {
         const user = await User.create(req.body).catch(function (err) {
             return { error: Object.keys(err.errors).map(x => (err.errors[x].message)) }
         });
-        return res.json(user)
+        function isUser(u:IUser | object){
+            return 'username' in u;
+        }
+        if(!isUser(user)) return res.json(user) 
+        const {firstName, email, _id} = user as IUser
+        new Email()
+            .to(email)
+            .subject("Email confirmation")
+            .body('email-confirmation.html',
+                [
+                    {from:"${firstName}", to:firstName},
+                    {from:'${websiteName}', to:"Westpoint Module 1"},
+                    {from:"${token}", to:_id as string},
+                    {from:"${websiteUrl}", to:"http://localhost:3000"},
+                    {from:"${serverUrl}", to:"http://localhost:3001"},
+                    {from:"${websiteAddress}", to:"4th Floor, 100 Cannon St, London EC4N 6EU, United Kingdom"},
+
+                ])
+            .send()
+        return res.json({success:true, firstName, email})
     }
     public async update(req: Request, res: Response): Promise<Response> {
         if (req.body.firstName === "" || req.body.timezone === "")

@@ -6,6 +6,7 @@ import Authenticate from './pages/Authenticate'
 import Trade from './pages/Trade'
 import _404 from './pages/404'
 import { UserProvider } from "./context/UserContext"
+import EmailConfirmed from "./pages/EmailConfirmed";
 const App:React.FC<{}> = () =>{
   
   return (
@@ -15,6 +16,7 @@ const App:React.FC<{}> = () =>{
         <Route exact path="/profile" component={Profile}/>
         <Route exact path="/auth" component={Authenticate}/>
         <Route exact path="/trade" component={Trade}/>
+        <Route exact path="/confirmed" component={EmailConfirmed}/>
         <Route path="*" component={_404}/>
       </Switch></UserProvider></Router>
     </div>

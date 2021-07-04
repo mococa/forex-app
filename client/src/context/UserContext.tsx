@@ -47,7 +47,7 @@ export const UserProvider = ({children}:Props):JSX.Element =>{
     useEffect(() => {
         const localUser = localStorage.getItem('user')
         if(!localUser){
-          if(location.pathname !== "/auth"){
+          if(location.pathname !== "/auth" && location.pathname !== "/confirmed"){
             history.push("/auth");
           }
         }else{

@@ -46,10 +46,11 @@ const Header: React.FC = () => {
           </Box>
           <Box className={classes.row}>
             {user && 
-              <Hoverable text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
+              <Hoverable textHeader={<b style={{paddingRight:'24px'}}>My Wallet:</b>} text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
               <Typography component="span"
                 style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
                   <AccountBalanceWallet style={{marginRight:"5px"}} />
+                  
                   US${ moneyfy(user.wallet.USD)}
                 
               </Typography>
