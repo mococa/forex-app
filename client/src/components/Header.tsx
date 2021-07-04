@@ -5,7 +5,6 @@ import {
   Typography,
   Box,
   IconButton,
-  Popover
 } from "@material-ui/core";
 import { Person, AccountBalanceWallet } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -47,11 +46,11 @@ const Header: React.FC = () => {
           </Box>
           <Box className={classes.row}>
             {user && 
-              <Hoverable text={`US$${moneyfy(user.balance.usd)}\n£${moneyfy(user?.balance.gbp)}`}>
+              <Hoverable text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
               <Typography component="span"
                 style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
                   <AccountBalanceWallet style={{marginRight:"5px"}} />
-                  Wallet: US${ moneyfy(user.balance.usd)}
+                  US${ moneyfy(user.wallet.USD)}
                 
               </Typography>
             </Hoverable>

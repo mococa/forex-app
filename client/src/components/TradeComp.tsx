@@ -1,15 +1,15 @@
 import "../App.css";
 import {
-  Button, Box, Typography, Dialog, DialogActions,
+  Button, Box,  Dialog, DialogActions,
   DialogContent, DialogContentText, DialogTitle
 } from "@material-ui/core"
 import { green, pink } from '@material-ui/core/colors';
-import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, BarChart, Bar, Area, Legend, Tooltip, ComposedChart, ResponsiveContainer } from "recharts";
+import { makeStyles } from '@material-ui/core/styles';
+import {  XAxis, YAxis, CartesianGrid, Bar, Tooltip, ComposedChart, ResponsiveContainer } from "recharts";
 import { TradeContext, ITrade } from "../context/TradeContext"
-import { UserContext, IUser, IMyTrades } from "../context/UserContext";
+import { UserContext, IUser, } from "../context/UserContext";
 import { useState, useEffect, useReducer, useContext } from "react";
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   green: {
     backgroundColor: green[500],
     color: 'white',

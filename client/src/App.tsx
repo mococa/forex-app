@@ -1,13 +1,12 @@
 import "./App.css";
-import {Route, BrowserRouter as Router, Switch, useLocation, useHistory} from "react-router-dom";
+import {Route, BrowserRouter as Router, Switch} from "react-router-dom";
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Authenticate from './pages/Authenticate'
 import Trade from './pages/Trade'
 import _404 from './pages/404'
 import { UserProvider } from "./context/UserContext"
-import { useEffect, useState } from "react";
-const App:React.FC<{}> = ({}) =>{
+const App:React.FC<{}> = () =>{
   
   return (
     <div>

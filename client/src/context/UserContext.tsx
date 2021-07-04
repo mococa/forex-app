@@ -6,9 +6,9 @@ import { Location } from "history";
 type Props = {
     children?: JSX.Element | JSX.Element[],
   };
-export interface IBalance{
-  usd:number,
-  gbp:number
+export interface IWallet{
+  USD:number,
+  GBP:number
 }
 export interface IMyTrades{
   value: number, // Negative value if buying, positive if selling.
@@ -18,7 +18,7 @@ export interface IMyTrades{
 }
 export interface IUser{
     _id ?: string;
-    balance: IBalance;
+    wallet: IWallet;
     timezone? : string;
     trades: IMyTrades[];
     username ?: string;
@@ -40,7 +40,7 @@ const initialContext: context = {
 
 export const UserContext = createContext<context>(initialContext);
 export const UserProvider = ({children}:Props):JSX.Element =>{
-    const [user, setUser] = useState<IUser>({trades:[], balance:{usd:0,gbp:0}});
+    const [user, setUser] = useState<IUser>({trades:[], wallet:{USD:0,GBP:0}});
     const location = useLocation<Location>();
     const history = useHistory();
     

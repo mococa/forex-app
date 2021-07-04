@@ -1,48 +1,57 @@
-import { CastError, Model, model, Schema } from "mongoose";
-import Trade from "./Trade";
+import { CastError, Model, model, Schema, Document, EnforceDocument } from "mongoose";
+import TradeSchema,{ICoins, ICoinsKeys, ITrade} from "./Trade";
+import AuthService from "../services/auth_service";
+const SALT = 10
 
-export interface ITrade{
-    from:string,
-    to:string,
-    when:string,
-    value:number,
-    buy:boolean
+export interface IWallet{
+  USD:number,
+  GBP:number
 }
-//type Unpacked<T> = T extends (infer U)[] ? U : T;
-export interface IBalance{
-  usd:number,
-  gbp:number
-}
-export const BalanceSchema = new Schema({
-    usd:{type:Number, min:[0, "You don't have enough US$"]},
-    gbp:{type:Number, min:[0, "You don't have enough £"]}
-})
+
 export interface IUser{
+    _id?:string,
     firstName:string,
-    balance:IBalance,
+    wallet:IWallet,
     timezone:string,
-    trades: ITrade[]
+    trades: ITrade[],
+    password:string,
+    username:string,
+    verified:boolean
 }
-type UserType = IUser;
-const UserSchema = new Schema({
-    username: {type:String, required:[true,'You need to fill a username!'], unique:true,
-    //}// validate:{
 
-    /*},,validate: {
-        validator: function(v:string):any{
-            return this.model('User').findOne({ username: v }).then((user:IUser) => !user)
-        },
-        message: props => `${props.value} is already used by another user`
-    },*/
-},
+interface UserModel extends Omit<IUser, '_id'>, Document{}
+
+const UserSchema = new Schema({
+    username: {type:String, required:[true,'You need to fill a username!'], unique:true},
+    email:{type:String, required:[true, "You need to fill your e-mail"], unique:true},
+    password:{type:String, required:true},
     firstName: {type:String, required:[true, 'You need to fill a first name!']},
-    balance: {type:BalanceSchema, default:{usd:10,gbp:10}},
+    wallet: { 
+        USD:{type:Number, default:10, min:[0, "You don't have enough money for this trade"]}, 
+        GBP:{type:Number, default:10, min:[0, "You don't have enough money for this trade"]}, 
+    },
     timezone: {type:String, default:"London"},
-    trades:{type:Array, default:[]}
+    trades:{type:[TradeSchema], default:[]},
+    verified:{type:Boolean, default:false}
  },{timestamps:true})
- 
- UserSchema.path('username').validate(function(v:string){
+
+UserSchema.path('username').validate(function(v:string){
     return model('User').findOne({ username: v }).then(user => !user)
 }, "Username already taken")
 
-export default model<IUser>('User', UserSchema)
+UserSchema.path('email').validate(function(v:string){
+    return model("User").findOne({email:v}).then(user => !user)
+}, "Email already in use")
+
+UserSchema.pre<UserModel>('save', async function():Promise<void>{
+    if(!this.password || !this.isModified('password')) return;
+    try{
+        const hashedPassword = await AuthService.hashPassword(this.password)
+        this.password = hashedPassword
+    }catch(err){
+        console.error(`Error hashing password for user ${this.username}`)
+    }
+})
+
+
+export default model<UserModel>('User', UserSchema)

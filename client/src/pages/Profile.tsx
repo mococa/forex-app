@@ -1,6 +1,6 @@
 import "../App.css";
 import { useState, useContext, useEffect } from "react";
-import { IMyTrades, UserContext } from "../context/UserContext";
+import { UserContext } from "../context/UserContext";
 import Header from '../components/Header'
 import {TextField, Typography, Button, Box,Select,InputLabel,MenuItem   } from "@material-ui/core"
 import { PreviousTrades } from "../components/PreviousTrades";
@@ -75,7 +75,8 @@ const Profile:React.FC<{}> = () =>{
                  style={{marginTop:'20px', minWidth:'200px'}}
                  onClick={()=>setShowPrevTrades(!showPrevTrades)}>{showPrevTrades ? "HIDE PREVIOUS TRADES" : "MY PREVIOUS TRADES"}</Button>
             </Box>
-            {showPrevTrades && user && <PreviousTrades data={user?.trades as IMyTrade[]}/>}
+            {showPrevTrades && user && (user?.trades.length? <PreviousTrades data={user?.trades as IMyTrade[]}/> :
+            <Typography><br/>You have no trades yet.<br/> <a href="/trade">Trade now</a></Typography> )}
             <Box>
                 <Button style={{marginTop:'20px', minWidth:'120px'}} href="/">Voltar</Button>
             </Box>
@@ -84,7 +85,7 @@ const Profile:React.FC<{}> = () =>{
                  color="secondary"
                  style={{marginTop:'20px', minWidth:'120px'}}
                  href="/"
-                 onClick={()=>{setUser({trades:[], balance:{usd:0,gbp:0}});localStorage.clear()}}>Logout</Button>
+                 onClick={()=>{setUser({trades:[], wallet:{USD:0,GBP:0}});localStorage.clear()}}>Logout</Button>
             </Box>
 
         </Box>

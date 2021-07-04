@@ -1,5 +1,5 @@
 import "../App.css";
-import { useState, useEffect, useReducer, useContext, createContext } from "react";
+import {  useEffect, useReducer, useContext, createContext } from "react";
 import { UserContext } from "../context/UserContext";
 import {io, Socket} from 'socket.io-client';
 
@@ -61,24 +61,16 @@ export const TradeProvider = ({children}:Props):JSX.Element =>{
           return state
         }else{return state}
       }, [])
-      const [connected, setConnected] = useState(false);
 
       const ENDPOINT ="http://localhost:3001"
       useEffect(() => {
         const socket:Socket = io(ENDPOINT);
-        const eventHandler = () => setConnected(true);
         socket.on("trading", (data) => {
         if(data.length > "User Key Used to many times".length){
            try{
-            
-
               const json:ITrade = JSON.parse(data) as ITrade
-              //if(trades.find((x:ITrade)=>x.ts !== json.ts/* && (parseInt(json.ts) - parseInt(x.ts) <= 50)*/ )){
                 setTrades({ type: 'NEW_API_VALUE', trade:json})
                 setInvertedTrades({ type: 'NEW_INVERTED_VALUE', trade:invertAskAndBid(json)})
-              //}else{
-              //  console.log("Repeated")
-              //}
            }catch(er){
               console.log(er)
            }

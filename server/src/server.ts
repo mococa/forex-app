@@ -4,9 +4,16 @@ import * as socketio from "socket.io";
 import User from '../controllers/User'
 import cors from 'cors'
 import fetch from 'node-fetch'
-import currency from './currency'
-import { SlowBuffer } from 'buffer';
-//import { io } from "socket.io-client";
+import { Socket } from 'dgram';
+import dotenv from 'dotenv';
+dotenv.config();
+//import Email from '../services/email-sender';
+
+// new Email()
+//     .to('xfazxtudo@gmail.com')
+//     .subject("cool subject")
+//     .body('email-confirmation.html', [{from:"${firstName}", to:"Cool"}])
+//     .send()
 
 
 const app = express()
@@ -29,15 +36,14 @@ const io = require('socket.io')(server, {
 
   const reconnectInterval  = 1000
   console.log("User connected")
-  const token = "siou_xj8kxWEApsya8xVw"
+  const token = process.env.tradermadeAPI
   
   const payload = JSON.stringify({
       userKey:token, 
-      symbol:"GBPUSD"//socket.handshake.query.to.toUpperCase()+socket.handshake.query.from.toUpperCase(),
+      symbol:"GBPUSD"
   }) 
       
-  
-io.on("connection", async function(socket: any) {
+io.on("connection", async function(socket: Socket) {
     var ws
     var connect = function(){
 
@@ -45,17 +51,17 @@ io.on("connection", async function(socket: any) {
   
     ws.on('open', function open() {
         ws.send(payload);
-       
     });
-    
+    ws.on('error', function(d:string){
+        console.log(d)
+    })
     ws.on('close', function() {
       console.log('socket close');
       setTimeout(()=>{connect()}, reconnectInterval)
     });
     
-    ws.on('message', function incoming(data: string) {
-       if(data.length > "User Key Used to many times".length /*&&
-        // data !== lastData*/){
+    ws.on('message', async function incoming(data: string) {
+       if(data.length > "User Key Used to many times".length){
             try{
                 setTimeout(async ()=>{
                     await io.emit('trading',data);
@@ -64,7 +70,6 @@ io.on("connection", async function(socket: any) {
             }catch(er){
                 console.log(er)
             }
-        // lastData = data;
          }
     })
 }
@@ -74,6 +79,7 @@ connect()
  });
 
 mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost/module1', {
         useNewUrlParser: true , 
         useUnifiedTopology: true
@@ -89,7 +95,7 @@ app.get('/', async (req,res)=>{
 
 app.get('/api/users', User.get)
 
-app.get('/api/user',/*checkUser,*/ User.mine)
+app.get('/api/user',User.checkVerified, User.mine)
 app.post('/api/users/create', User.create)
 app.post('/api/trade', User.pushTrade)
 app.post('/api/user/update', User.update)
@@ -101,4 +107,9 @@ app.get("/time", async (req,res)=>{
       const _time = await response_time.json();
       return res.json(_time)
 })
+
+
+app.get('/api/verify/:id', User.verify)
+
+
 server.listen(3001);

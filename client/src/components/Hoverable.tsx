@@ -24,7 +24,6 @@ interface Props {
 export const Hoverable: React.FC<Props> = ({ children, text, content, anchorOrigin, transformOrigin }): JSX.Element => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const [hoveringPopup, setHoveringPopup] = useState(true);
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
     };

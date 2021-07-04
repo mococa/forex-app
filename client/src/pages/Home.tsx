@@ -21,18 +21,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Home:React.FC<{}> = () =>{
     
-    
-  interface IUser{
-    "_id" : string,
-      "balance" : 0,
-      "timezone" : string,
-      "trades" : [],
-      "username" : string,
-      "firstName" : string,
-      "createdAt" : string,
-      "updatedAt" : string,
-      "__v" : number
-  }
   interface ITime{
     dateTime:string
   }

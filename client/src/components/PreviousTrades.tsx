@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    Popover, Typography,
+    Typography,
     Box, Collapse,
     IconButton, Table,
     TableBody,
@@ -21,15 +21,6 @@ const useRowStyles = makeStyles({
         },
     },
 });
-const styles = (theme: { spacing: (arg0: number) => any; breakpoints: { down: (arg0: string) => any; up: (arg0: string) => any; }; palette: { secondary: { main: any; }; primary: { main: any; }; }; }) => ({
-    table_itself: {
-        padding: theme.spacing(1),
-        [theme.breakpoints.down('sm')]: {
-            backgroundColor: theme.palette.secondary.main,
-        }
-    },
-});
-
 
 interface Props {
     data?: IMyTrade[]
@@ -92,7 +83,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                             <Table size="small" aria-label="summary">
                                 <TableBody>
                                     <Typography component="span">
-                                        <>On{" "}<b>{date}</b>{", at "}<b>{time}</b></><br/><br/>
+                                        <>On{" "}<b>{date}</b>{", at "}<b>{time}:</b></><br/><br/>
                                         {
                                             `You ${row.buy ? `spent ${Math.abs(row.value)} ${row.to}` :
                                                 `sold 1 ${row.from}`}
@@ -110,7 +101,6 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 }
 
 export const PreviousTrades: React.FC<Props> = ({ data }): JSX.Element => {
-    console.log(data)
     return (
         <TableContainer component={Paper} style={{ marginTop: '2rem' }}>
             <Table aria-label="collapsible table">
@@ -131,5 +121,6 @@ export const PreviousTrades: React.FC<Props> = ({ data }): JSX.Element => {
                 </TableBody>
             </Table>
         </TableContainer>
+
     )
 }
