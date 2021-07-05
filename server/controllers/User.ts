@@ -1,5 +1,5 @@
 import { Request, Response,NextFunction } from "express"
-import { isValidObjectId, ObjectId } from "mongoose";
+import { isValidObjectId, Mongoose, Document, ObjectId } from "mongoose";
 import { ICoins, ITrade } from "../models/Trade";
 import User, { IWallet, IUser } from '../models/User';
 import AuthService from "../services/auth_service";
@@ -77,7 +77,9 @@ class UserController {
         if(!req.query.password) return res.json({error:errors.WRONG_USER_OR_PASSWORD})
         if(!await AuthService.comparePassword(req.query.password as string,user.password))
             return res.json({error:errors.WRONG_USER_OR_PASSWORD}).status(404)
-        return res.json(user).status(200)
+
+        const user_clone = (({ password, ...o }) => o)(user.toObject())// remove password
+        return res.json(user_clone).status(200)
     }
     public async pushTrade(req: Request, res: Response): Promise<Response> {
         const { trade, _id, buy } = req.body

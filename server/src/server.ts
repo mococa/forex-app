@@ -48,7 +48,7 @@ io.on("connection", async function(socket: Socket) {
     })
     ws.on('close', function() {
       console.log('socket close');
-      setTimeout(()=>{connect()}, reconnectInterval)
+      //setTimeout(()=>{connect()}, reconnectInterval)
     });
     
     ws.on('message', async function incoming(data: string) {

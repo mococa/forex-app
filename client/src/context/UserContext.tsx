@@ -26,8 +26,10 @@ export interface IUser{
     createdAt ?: string;
     updatedAt? : string;
     __v? : number;
+    verified?:boolean;
+    email?:string;
   }
-interface context {
+export interface context {
     user?: IUser;
     setUser:(user:IUser) => void
 }
@@ -52,6 +54,9 @@ export const UserProvider = ({children}:Props):JSX.Element =>{
           }
         }else{
           setUser(JSON.parse(localUser))
+          if(location.pathname === "/auth" || location.pathname === "/confirmed"){
+            history.push("/");
+          }
         }
     }, [history, location.pathname]);
     const val:context = {user,setUser};

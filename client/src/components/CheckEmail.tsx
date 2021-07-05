@@ -29,7 +29,7 @@ export const CheckEmail: React.FC<Props> = ({ openCheckEmail, setOpenCheckEmail 
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
             >
-                <div style={{ display: 'flex', flexFlow: 'column', gap: '12px', placeItems: 'center', padding: '24px' }}>
+                <div data-testid="check-email-content" style={{ display: 'flex', flexFlow: 'column', gap: '12px', placeItems: 'center', padding: '24px' }}>
 
                     <Email style={{ color: "#c55858", fontSize: "80" }} />
                     <Typography style={{ fontWeight: 600 }} variant="h5">

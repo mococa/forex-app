@@ -9,6 +9,7 @@ import {
   Container,
   Box,
   Button,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -20,7 +21,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home:React.FC<{}> = () =>{
-    
+  //const buttonStyle={"marginTop":"250px","textAlign":"center","left":"calc(50% - 36px - 60px)","borderRadius":"18px","fontWeight":900,"padding":"5px 60px"}
+  const matches = useMediaQuery('(min-width:500px)');
   interface ITime{
     dateTime:string
   }
@@ -30,22 +32,22 @@ const Home:React.FC<{}> = () =>{
   const [time, setTime] = useState<ITime>();
   useEffect(() => {
     async function fetch_data() {
-      const url_fetch = "http://localhost:3001/time?timezone=" + user?.timezone
-      console.log(url_fetch)
-      const response_time = await fetch(url_fetch);
-      const _time = await response_time.json();
-      console.log(_time);
-
+      if(user && '_id' in user) {
+        const url_fetch = "http://192.168.0.2:3001/time?timezone=" + user.timezone
+        console.log(url_fetch)
+        const response_time = await fetch(url_fetch);
+        const _time = await response_time.json();
       
-      const lsRAW:string|null = localStorage.getItem('user') as string|null
-      const lsUser = lsRAW ?  JSON.parse(lsRAW) : {}
-      if(_time === "Invalid Timezone" && lsUser.timezone){
-        //alert(101)
-        setTime({dateTime:lsUser.timezone});
-      }else{
-        setTime(_time);
+        const lsRAW:string|null = localStorage.getItem('user') as string|null
+        const lsUser = lsRAW ?  JSON.parse(lsRAW) : {}
+        if(_time === "Invalid Timezone" && lsUser.timezone){
+          console.error("No timezone from server, even though user has one.")
+          console.info("Setting timezone for user machine")
+          setTime({dateTime:Intl.DateTimeFormat().resolvedOptions().timeZone});
+        }else{
+          setTime(_time);
+        }
       }
-      
     }
     fetch_data();
   }, [user]);
@@ -65,19 +67,19 @@ const Home:React.FC<{}> = () =>{
 
   return (
     <>
-      {!time ? (
+      {!time ?
         <Backdrop className={classes.backdrop} open={true}>
           <CircularProgress color="inherit" />
         </Backdrop>
-      ) : (
+       : 
         <>
           <Header/>
           <Container>
             <Box m={2}>
-              <Typography variant="h4">
-                {greetings()}, {user?.firstName}
+              <Typography data-testid="home-greetings" variant={matches ? "h3" : "h4"} align="center" style={{margin: '60px 0 10px'}}>
+                {`👋 ${greetings()} ${matches?", ":"\n"} ${user?.firstName}!`}
               </Typography>
-              <Typography variant="h6">
+              <Typography variant="h6" align="center">
                 {time && new Date(time['dateTime'])
                   .toLocaleTimeString(navigator.language, {
                     hour: "2-digit",
@@ -87,16 +89,19 @@ const Home:React.FC<{}> = () =>{
                 seems like a good time for trading
               </Typography>
               <Button
+                style={{margin:'250px 0 20px',
+                        padding:"5px 30px", left:"calc(50% - 30px - 40px)",
+                        backgroundColor:'#53b153', color:'white', fontSize:'1rem'}}
                 variant="outlined"
                 href="/trade"
-                style={{ marginTop: "8px" }}
+                
               >
                 Start now
               </Button>
             </Box>
           </Container>
         </>
-      )}
+      }
     </>
   );
 }

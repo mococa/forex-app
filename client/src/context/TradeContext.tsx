@@ -62,7 +62,7 @@ export const TradeProvider = ({children}:Props):JSX.Element =>{
         }else{return state}
       }, [])
 
-      const ENDPOINT ="http://localhost:3001"
+      const ENDPOINT ="http://192.168.0.2:3001"
       useEffect(() => {
         const socket:Socket = io(ENDPOINT);
         socket.on("trading", (data) => {

@@ -1,7 +1,7 @@
 import "../App.css";
 import {
   Button, Box,  Dialog, DialogActions,
-  DialogContent, DialogContentText, DialogTitle
+  DialogContent, DialogContentText, DialogTitle, useMediaQuery
 } from "@material-ui/core"
 import { green, pink } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,6 +9,7 @@ import {  XAxis, YAxis, CartesianGrid, Bar, Tooltip, ComposedChart, ResponsiveCo
 import { TradeContext, ITrade } from "../context/TradeContext"
 import { UserContext, IUser, } from "../context/UserContext";
 import { useState, useEffect, useReducer, useContext } from "react";
+
 const useStyles = makeStyles(() => ({
   green: {
     backgroundColor: green[500],
@@ -34,6 +35,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 const TradeComp: React.FC<{}> = () => {
+  const matches = useMediaQuery('(min-width:500px)');
   interface ICurrencies {
     from: string,
     to: string
@@ -61,7 +63,7 @@ const TradeComp: React.FC<{}> = () => {
         when: lastTrade.ts,
         tradeAtTime: lastTrade
       }
-      const response = await fetch("http://localhost:3001/api/trade",
+      const response = await fetch("http://192.168.0.2:3001/api/trade",
         {
           method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
           body: JSON.stringify({
@@ -100,7 +102,7 @@ const TradeComp: React.FC<{}> = () => {
           </Button>
         </Box>
         <Box>
-          <ResponsiveContainer width="60%" height={250} className={classes.chart}>
+          <ResponsiveContainer width={matches?"60%":"90%"} height={250} className={classes.chart}>
             <ComposedChart data={currentTr} >
               <XAxis tickMargin={10} height={28} dataKey="time" />
               <YAxis tickCount={2} domain={['auto', 'auto']} />

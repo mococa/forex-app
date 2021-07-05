@@ -50,6 +50,7 @@ export const Hoverable: React.FC<Props> = ({ children, text, textHeader, content
             {children}
             <Popover
                 id="mouse-over-popover"
+                data-testid="popover"
                 className={classes.popover}
                 classes={{
                     paper: classes.paper,

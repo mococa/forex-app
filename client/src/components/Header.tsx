@@ -33,25 +33,30 @@ const useStyles = makeStyles((theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
-  const moneyfy = (cur: number = 0) => {
-    return cur.toFixed(2).toLocaleString()
-  }
+  const moneyfy = (cur: number = 0) => cur.toFixed(2).toLocaleString()
 
   return (
     <>
       <AppBar position="fixed" className={classes.root}>
         <Toolbar>
           <Box className={classes.box}>
-            <Typography variant="h5" component="a" href="/" style={{ color: 'white', textDecoration: 'none' }}>Forex Application</Typography>
+            <Typography variant="h5" 
+              component="a" 
+              data-testid="header-title"
+              href="/" style={{ color: 'white', textDecoration: 'none' }}
+              >Forex
+            </Typography>
           </Box>
           <Box className={classes.row}>
             {user && 
-              <Hoverable textHeader={<b style={{paddingRight:'24px'}}>My Wallet:</b>} text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
+              <Hoverable
+                textHeader={<b style={{paddingRight:'24px'}}
+                >My Wallet:</b>} text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
               <Typography component="span"
                 style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
                   <AccountBalanceWallet style={{marginRight:"5px"}} />
                   
-                  US${ moneyfy(user.wallet.USD)}
+                  <span data-testid="hoverable">US${ moneyfy(user.wallet.USD)}</span> 
                 
               </Typography>
             </Hoverable>
