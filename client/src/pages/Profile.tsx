@@ -27,7 +27,7 @@ const Profile: React.FC<{}> = () => {
     }
   }, [user, loaded])
   async function update() {
-    const response = await fetch("http://192.168.0.2:3001/api/user/update",
+    const response = await fetch("http://localhost:3001/api/user/update",
       {
         method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
         body: JSON.stringify({

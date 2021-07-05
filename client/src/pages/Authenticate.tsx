@@ -42,7 +42,7 @@ const Authencticate: React.FC<{}> = () => {
 
   const history = useHistory();
   async function login() {
-    const response = await fetch("http://192.168.0.2:3001/api/user?" +
+    const response = await fetch("http://localhost:3001/api/user?" +
       new URLSearchParams({
         username: username,
         password: password
@@ -64,7 +64,7 @@ const Authencticate: React.FC<{}> = () => {
   }
   async function register() {
     if (!verifyPass()) return alert("The password confirmation does not match")
-    const response = await fetch("http://192.168.0.2:3001/api/users/create",
+    const response = await fetch("http://localhost:3001/api/users/create",
       {
         method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
         body: JSON.stringify({
@@ -90,7 +90,7 @@ const Authencticate: React.FC<{}> = () => {
   return (
     <>
       {openCheckEmail && <CheckEmail openCheckEmail={openCheckEmail} setOpenCheckEmail={setOpenCheckEmail} />}
-      <Box className={classes.box}>
+      <Box className={classes.box} style={{marginTop:'40px'}}>
         <Box className={classes.col}>
           <Typography variant="h4" data-testid="login-text">Login</Typography>
           <TextField label="Username" variant="outlined"

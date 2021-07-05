@@ -33,7 +33,7 @@ const Home:React.FC<{}> = () =>{
   useEffect(() => {
     async function fetch_data() {
       if(user && '_id' in user) {
-        const url_fetch = "http://192.168.0.2:3001/time?timezone=" + user.timezone
+        const url_fetch = "http://localhost:3001/time?timezone=" + user.timezone
         console.log(url_fetch)
         const response_time = await fetch(url_fetch);
         const _time = await response_time.json();

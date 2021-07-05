@@ -63,7 +63,7 @@ const TradeComp: React.FC<{}> = () => {
         when: lastTrade.ts,
         tradeAtTime: lastTrade
       }
-      const response = await fetch("http://192.168.0.2:3001/api/trade",
+      const response = await fetch("http://localhost:3001/api/trade",
         {
           method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
           body: JSON.stringify({
