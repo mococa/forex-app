@@ -1,11 +1,11 @@
 import "../App.css";
 import { useState, useContext } from "react";
-import { Button, TextField, Typography, Box, Select, InputLabel, MenuItem, IconButton } from "@material-ui/core";
+import { Button, TextField, Typography, Box, Select, MenuItem, InputLabel } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Brightness4Icon from '@material-ui/icons/Brightness4';
 import { UserContext, IUser } from "../context/UserContext";
 import { useHistory } from 'react-router-dom'
 import { CheckEmail } from "../components/CheckEmail";
+import VerificationInput from "../components/VerificationInput";
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -29,19 +29,38 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Authencticate: React.FC<{}> = () => {
-  const [username, setUsername] = useState("test2");
+  const [username, setUsername] = useState("user");
   const [email, setEmail] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
-  const [password, setPassword] = useState("1234")
+  const [password, setPassword] = useState("Luiz@123")
   const [registerPassword, setRegisterPassword] = useState("")
-  const [registerPassword2, setRegisterPassword2] = useState("")
+  const [registerPasswordConfirmation, setRegisterPasswordConfirmation] = useState("")
   const [firstName, setFirstName] = useState("");
   const [timeZone, setTimeZone] = useState("Europe/London");
   const { setUser } = useContext(UserContext);
   const [openCheckEmail, setOpenCheckEmail] = useState(false);
-
   const history = useHistory();
+  interface IVerificationInput{
+    component:JSX.Element,
+    value:string
+  }
+  const verificationInputs:IVerificationInput[] =[
+    {component:<VerificationInput key={0} setValue={setRegisterUsername} type="text" label="Username"/>, value:registerUsername},
+    {component:<VerificationInput key={1} setValue={setFirstName} type="text" label="First Name"/>, value:firstName},     
+    {component:<VerificationInput key={2} error="Not cool email" setValue={setEmail}
+      type="text" label="E-mail"
+      regex={/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/}
+    />, value:email},
+    {component:<VerificationInput key={3} error="Not cool password" setValue={setRegisterPassword}
+      type="password" label="Password"
+      regex={/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/}
+    />, value:registerPassword},
+    {component:<VerificationInput key={4} setValue={setRegisterPasswordConfirmation}
+      type="password" label="Confirm Password"
+    />, value:registerPasswordConfirmation}
+]
   async function login() {
+    
     const response = await fetch("http://localhost:3001/api/user?" +
       new URLSearchParams({
         username: username,
@@ -60,18 +79,26 @@ const Authencticate: React.FC<{}> = () => {
     }
   }
   function verifyPass() {
-    return registerPassword === registerPassword2
+    return registerPassword === registerPasswordConfirmation
   }
+  
   async function register() {
+    console.log(verificationInputs.find(x=>x.value.length===0))
+    if(verificationInputs.map(x=>x.value.length>0).some(x=>x===false)) {
+      return alert("Please fill every required field.")
+    }
     if (!verifyPass()) return alert("The password confirmation does not match")
+    const verificated = verificationInputs.filter(x=>x.component.props.regex && x).map(x=>x.component.props.regex.test(x.value))
+    if(verificated.some(x=>x===false))
+      return alert(verificationInputs.filter(x=>x.component.props.regex && x)[verificated.findIndex(x=>x===false)].component.props.error)
     const response = await fetch("http://localhost:3001/api/users/create",
-      {
+      { 
         method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
         body: JSON.stringify({
           username: registerUsername,
           email: email,
           password: registerPassword,
-          passwordConfirmation: registerPassword2,
+          passwordConfirmation: registerPasswordConfirmation,
           firstName: firstName,
           timezone: timeZone
         })
@@ -104,27 +131,13 @@ const Authencticate: React.FC<{}> = () => {
           <Box></Box>
         </Box>
         <Box className={classes.col} style={{ marginBottom: '30px' }}>
+          
           <Typography variant="h4">Register</Typography>
-          <TextField required
-            label="Username" variant="outlined"
-            value={registerUsername}
-            onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setRegisterUsername(e.target.value as string)} />
-          <TextField required 
-            label="First Name" variant="outlined"
-            onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setFirstName(e.target.value as string)} />
-          <TextField required
-            label="Email" variant="outlined"
-            onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setEmail(e.target.value as string)} />
-          <TextField required
-            label="Password" type="password"
-            variant="outlined" value={registerPassword2}
-            onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setRegisterPassword2(e.target.value as string)} />
-          <TextField required
-            label="Confirm Password" type="password"
-            variant="outlined" value={registerPassword}
-            onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setRegisterPassword(e.target.value as string)} />
-          <InputLabel id="demo-simple-select-label"
-          >Timezone</InputLabel>
+
+          {verificationInputs.map(verificationInput=>verificationInput.component)}
+          
+          <InputLabel id="demo-simple-select-label">Timezone</InputLabel> 
+
           <Select style={{ minWidth: '200px' }}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -140,6 +153,7 @@ const Authencticate: React.FC<{}> = () => {
             <MenuItem value={"Africa/Johannesburg"}>Johannesburg</MenuItem>
             <MenuItem value={"Europe/Moscow"}>Moscow</MenuItem>
           </Select>
+
           <span style={{color:'rgba(180,0,0,0.8)', marginTop:'10px'}}>* Required field</span>
           <Button variant="contained" color="secondary"
             style={{ minWidth: '200px', marginTop: '8px', padding: '8px' }}

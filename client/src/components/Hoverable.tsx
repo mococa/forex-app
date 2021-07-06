@@ -1,5 +1,8 @@
 import { Popover, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
+
 import React, { useState } from "react";
 const useStyles = makeStyles((theme) => ({
     popover: { pointerEvents: 'none' },
@@ -8,9 +11,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 interface Props {
-    //children?: JSX.Element | JSX.Element[],
-    text: string | number | JSX.Element |undefined,
-    textHeader?: JSX.Element | string
+    text: string | number | JSX.Element | undefined,
+    textHeader?: JSX.Element | string,
+    href?: string,
     content?: JSX.Element | JSX.Element[],
     anchorOrigin?: {
         vertical: 'bottom' | 'center' | 'top' | number,
@@ -22,9 +25,10 @@ interface Props {
     }
 };
 
-export const Hoverable: React.FC<Props> = ({ children, text, textHeader, content, anchorOrigin, transformOrigin }): JSX.Element => {
+export const Hoverable: React.FC<Props> = ({ children, text, textHeader, href, content, anchorOrigin, transformOrigin }): JSX.Element => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const history = useHistory()
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -45,29 +49,30 @@ export const Hoverable: React.FC<Props> = ({ children, text, textHeader, content
         }
 
     }
-    return (
-        <div onMouseEnter={handlePopoverOpen} onMouseLeave={handlePopoverClose}>
-            {children}
-            <Popover
-                id="mouse-over-popover"
-                data-testid="popover"
-                className={classes.popover}
-                classes={{
-                    paper: classes.paper,
-                }}
-                open={open}
-                anchorEl={anchorEl}
-                anchorOrigin={anchorOrigin ? anchorOrigin : default_values.anchorOrigin}
-                transformOrigin={transformOrigin ? transformOrigin : default_values.transformOrigin}
-                onClose={handlePopoverClose}
-                disableRestoreFocus>
-                {textHeader && textHeader}
-                <pre>
-                    <Typography>{text}</Typography>
-                </pre>
-                {content && content}
+    const content_ = <>
+        {children}
+        <Popover
+            id="mouse-over-popover"
+            data-testid="popover"
+            className={classes.popover}
+            classes={{
+                paper: classes.paper,
+            }}
+            open={open}
+            anchorEl={anchorEl}
+            anchorOrigin={anchorOrigin ? anchorOrigin : default_values.anchorOrigin}
+            transformOrigin={transformOrigin ? transformOrigin : default_values.transformOrigin}
+            onClose={handlePopoverClose}
+            disableRestoreFocus>
+            {textHeader && textHeader}
+            <pre>
+                <Typography>{text}</Typography>
+            </pre>
+            {content && content}
 
-            </Popover>
-        </div>)
-
+        </Popover>
+    </>
+    return href?<Link style={{textDecoration:'none', color:'unset'}} to={href} onMouseEnter={handlePopoverOpen}
+    onMouseLeave={handlePopoverClose}>{content_}</Link>:<div onMouseEnter={handlePopoverOpen}
+    onMouseLeave={handlePopoverClose}>{content_}</div>
 }

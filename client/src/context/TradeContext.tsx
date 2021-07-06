@@ -18,7 +18,7 @@ export interface IMyTrade {
   value: number,
   from: string,
   to: string,
-  when: string,
+  when: number,
   buy: boolean,
   tradeAtTime:ITrade
 }

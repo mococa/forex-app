@@ -10,7 +10,6 @@ describe("Profile Page", ()=>{
     beforeAll(()=>{
         const userInit:IUser = {wallet:{USD:10,GBP:10},timezone:"America/Sao_Paulo",verified:true,_id:"60e126c017581c4aff08605e",username:"testusername",email:"test@gmail.com",firstName:"Test",trades:[]}
         localStorage.setItem('user', JSON.stringify(userInit))
-
     })
     test("Checking Profile content", ()=>{
     

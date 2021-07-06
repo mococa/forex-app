@@ -1,6 +1,7 @@
 import { CastError, Model, model, Schema, Document, EnforceDocument } from "mongoose";
 import TradeSchema,{ICoins, ICoinsKeys, ITrade} from "./Trade";
 import AuthService from "../services/auth_service";
+import PurchaseSchema, { IPurchase } from "./Purchases";
 const SALT = 10
 
 export interface IWallet{
@@ -14,6 +15,7 @@ export interface IUser{
     email:string,
     wallet:IWallet,
     timezone:string,
+    purchases:IPurchase[],
     trades: ITrade[],
     password:string,
     username:string,
@@ -33,7 +35,9 @@ const UserSchema = new Schema({
     },
     timezone: {type:String, default:"London"},
     trades:{type:[TradeSchema], default:[]},
+    purchases:{type:[PurchaseSchema], default:[]},
     verified:{type:Boolean, default:false}
+
  },{timestamps:true})
 
 UserSchema.path('username').validate(function(v:string){

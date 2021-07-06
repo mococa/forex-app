@@ -90,6 +90,7 @@ app.get('/api/user',User.checkVerified, User.mine)
 app.post('/api/users/create', User.create)
 app.post('/api/trade', User.pushTrade)
 app.post('/api/user/update', User.update)   
+app.post('/api/user/buy', User.addMoney)   
 app.get("/time", async (req,res)=>{
     const response_time = await fetch(
         "https://www.timeapi.io/api/Time/current/zone?timeZone=" +

@@ -3,20 +3,15 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import Header from '../components/Header'
 import { TextField, Typography, Button, Box, Select, InputLabel, MenuItem } from "@material-ui/core"
-import { PreviousTrades } from "../components/PreviousTrades";
-import { IMyTrade } from "../context/TradeContext";
 import { useHistory } from "react-router";
 
 const Profile: React.FC<{}> = () => {
   const history = useHistory()
   const { user, setUser } = useContext(UserContext)
-  const [timeZone, setTimeZone] = useState<string | unknown>('')
+  const [timeZone, setTimeZone] = useState<string>('')
   const [firstName, setFirstName] = useState('')
   const [loaded, setLoaded] = useState(false)
-  const [showPrevTrades, setShowPrevTrades] = useState(false);
-
   useEffect(() => {
-    console.log("done!")
     return () => {
       if (!loaded) {
         setTimeZone(user?.timezone || "")
@@ -61,7 +56,7 @@ const Profile: React.FC<{}> = () => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={timeZone}
-              onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setTimeZone(e.target.value)}
+              onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setTimeZone(e.target.value as string)}
             >
               <MenuItem value={"Europe/London"}>London</MenuItem>
               <MenuItem value={"America/Sao_Paulo"}>São Paulo</MenuItem>
@@ -71,6 +66,7 @@ const Profile: React.FC<{}> = () => {
               <MenuItem value={"Asia/Tokyo"}>Tokyo</MenuItem>
               <MenuItem value={"Africa/Johannesburg"}>Johannesburg</MenuItem>
               <MenuItem value={"Europe/Moscow"}>Moscow</MenuItem>
+
             </Select>
 
           </Box>
@@ -79,11 +75,10 @@ const Profile: React.FC<{}> = () => {
             onClick={async () => await update()}>Update</Button>
           <Box>
             <Button variant="contained"
+              href="/wallet"
               style={{ marginTop: '20px', minWidth: '200px' }}
-              onClick={() => setShowPrevTrades(!showPrevTrades)}>{showPrevTrades ? "HIDE PREVIOUS TRADES" : "MY PREVIOUS TRADES"}</Button>
+              >{"MY PREVIOUS TRADES"}</Button>
           </Box>
-          {showPrevTrades && user && (user?.trades.length ? <PreviousTrades data={user?.trades as IMyTrade[]} /> :
-            <Typography><br />You have no trades yet.<br /> <a href="/trade">Trade now</a></Typography>)}
           <Box>
             <Button style={{ marginTop: '20px', minWidth: '120px' }} onClick={()=>history.goBack()}>Go back</Button>
           </Box>
@@ -92,7 +87,7 @@ const Profile: React.FC<{}> = () => {
               color="secondary"
               style={{ marginTop: '20px', minWidth: '120px' }}
               href="/"
-              onClick={() => { setUser({ trades: [], wallet: { USD: 0, GBP: 0 } }); localStorage.clear() }}>Logout</Button>
+              onClick={() => { setUser({ purchases:[],trades: [], wallet: { USD: 0, GBP: 0 } }); localStorage.clear() }}>Logout</Button>
           </Box>
 
         </Box>

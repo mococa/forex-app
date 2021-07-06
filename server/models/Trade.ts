@@ -14,13 +14,13 @@ export enum ICoins{
     'GBP'
 }
 export type ICoinsKeys = keyof typeof ICoins;
-type ICoinsKeyFields = {[key in ICoinsKeys]:boolean}
+export type ICoinsKeyFields = {[key in ICoinsKeys]:boolean}
 //https://stackoverflow.com/questions/39701524/using-enum-as-interface-key-in-typescript saved me
 
 export interface ITrade extends ICoinsKeyFields {
     from: ICoinsKeys,//'USD' | 'GBP',
     to: ICoinsKeys,//'USD' | 'GBP',
-    when: string,
+    when: number,
     value: number,
     buy: boolean,
     tradeAtTime?: IAPITrade,
@@ -30,7 +30,7 @@ const TradeSchema = new Schema({
     from: { type: String, required: true },
     to: { type: String, required: true },
     value: { type: Number, default: 0 },
-    when: { type: String, default: new Date().toISOString() },
+    when: { type: Number, default: new Date().getTime() },
     buy:{type: Boolean, required:true},
     tradeAtTime:{ type:Object, required: false },
 }, { timestamps: false })

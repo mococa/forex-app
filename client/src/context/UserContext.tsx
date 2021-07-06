@@ -5,22 +5,35 @@ import { Location } from "history";
 
 type Props = {
     children?: JSX.Element | JSX.Element[],
-  };
+};
+export enum ICoins{
+    'USD',
+    'GBP'
+}
+export type ICoinsKeys = keyof typeof ICoins;
+export type ICoinsKeyFields = {[key in ICoinsKeys]:boolean}
 export interface IWallet{
   USD:number,
   GBP:number
 }
 export interface IMyTrades{
+  buy: boolean;
   value: number, // Negative value if buying, positive if selling.
   from:string,
   to:string,
-  when:string
+  when:number
+}
+export interface IPurchase{
+  currency: ICoinsKeys,//'USD' | 'GBP',
+  amount: number,
+  when:number
 }
 export interface IUser{
     _id ?: string;
     wallet: IWallet;
     timezone? : string;
     trades: IMyTrades[];
+    purchases:IPurchase[];
     username ?: string;
     firstName ?: string;
     createdAt ?: string;
@@ -28,6 +41,7 @@ export interface IUser{
     __v? : number;
     verified?:boolean;
     email?:string;
+    buy?:boolean
   }
 export interface context {
     user?: IUser;
@@ -42,7 +56,7 @@ const initialContext: context = {
 
 export const UserContext = createContext<context>(initialContext);
 export const UserProvider = ({children}:Props):JSX.Element =>{
-    const [user, setUser] = useState<IUser>({trades:[], wallet:{USD:0,GBP:0}});
+    const [user, setUser] = useState<IUser>({trades:[],purchases:[], wallet:{USD:0,GBP:0}});
     const location = useLocation<Location>();
     const history = useHistory();
     

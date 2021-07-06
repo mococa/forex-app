@@ -51,8 +51,8 @@ export default class Email{
         this._subject = subject;
         return this
     }
-    body(htmlFilePath:string, patterns:Array<IPattern>){
-        var tempBody = fs.readFileSync(process.cwd()+'/server/emails/'+htmlFilePath, { encoding: 'utf-8' })
+    body(htmlFileName:string, patterns:Array<IPattern>){
+        var tempBody = fs.readFileSync(process.cwd()+'/server/emails/'+htmlFileName, { encoding: 'utf-8' })
         for (const pattern of patterns) {
             tempBody = tempBody.split(pattern.from).join(pattern.to)
         }

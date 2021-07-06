@@ -1,6 +1,6 @@
 import { Request, Response,NextFunction } from "express"
 import { isValidObjectId, Mongoose, Document, ObjectId } from "mongoose";
-import { ICoins, ITrade } from "../models/Trade";
+import { ICoinsKeys, ITrade } from "../models/Trade";
 import User, { IWallet, IUser } from '../models/User';
 import AuthService from "../services/auth_service";
 import Email from "../services/email-sender";
@@ -13,7 +13,9 @@ enum errors{
     MISSING_PASSWORD="Please, provide a password",
     MISSING_USERNAME="Please, provide a username",
     UNKNOWN_ERROR="An unknown error occurred. Please, reauthenticate yourself.",
-    PASSWORD_MISMATCH="Entered password does not match its confirmation."
+    PASSWORD_MISMATCH="Entered password does not match its confirmation.",
+    EMAIL_REGEX_RULE_MISMATCH="Email not entered in the right format.",
+    PASSWORD_REGEX_RULE_MISMATCH="Password must be stronger."
 }
 class UserController {
     public async get(req: Request, res: Response): Promise<Response> {
@@ -32,17 +34,33 @@ class UserController {
     public async checkVerified(req: Request, res: Response, next:NextFunction): Promise<Response | NextFunction | void> {
         const {username} = req.query
         if(!username) return res.json({error:errors.NOT_FOUND}).status(404)
-        const user = await User.findOne({username:username as string, verified:true})
-        if(!user) return res.json({error:errors.NOT_VERIFIED}).status(404)
+        const user = await User.findOne({username:username as string})
+        if(!user) return res.json({error:errors.NOT_FOUND}).status(404)
+        if(!user.verified) return res.json({error:errors.NOT_VERIFIED}).status(404)
         return next()
     }
     public async create(req: Request, res: Response): Promise<Response> {
-        if(req.body.passwordConfirmation !== req.body.password )
-            return res.json({error:errors.PASSWORD_MISMATCH}).status(400)
+        console.log(101)
+        console.log(req.body)
+        if(req.body.passwordConfirmation !== req.body.password ){
+            console.log(102)
+            return res.json({error:[errors.PASSWORD_MISMATCH]}).status(400)
+        }
+        if(!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(req.body.email)){
+            console.log(103)
+            return res.json({error:[errors.EMAIL_REGEX_RULE_MISMATCH]}).status(400)
+        }
+        if(!/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(req.body.password)){
+            console.log(104)
+            return res.json({error:[errors.PASSWORD_REGEX_RULE_MISMATCH]}).status(400)
+        }
         delete req.body.passwordConfirmation
+        console.log(105)
         const user = await User.create(req.body).catch(function (err) {
-            return { error: Object.keys(err.errors).map(x => (err.errors[x].message)) }
+            console.log(err)
+            return ({ error: Object.keys(err.errors).map(x => (err.errors[x].message)) })
         });
+        console.log(106)
         function isUser(u:IUser | object){
             return 'username' in u;
         }
@@ -74,6 +92,7 @@ class UserController {
     public async mine(req: Request, res: Response): Promise<Response> {
         const user = await User.findOne({ username: req.query.username as string })
         if (!user) return res.json({ error: errors.NOT_FOUND }).status(404)
+        
         if(!req.query.password) return res.json({error:errors.WRONG_USER_OR_PASSWORD})
         if(!await AuthService.comparePassword(req.query.password as string,user.password))
             return res.json({error:errors.WRONG_USER_OR_PASSWORD}).status(404)
@@ -105,6 +124,16 @@ class UserController {
         await user.save({ validateBeforeSave: false })
         return res.json(user).status(200);
 
+    }
+    public async addMoney(req: Request, res: Response): Promise<Response> {
+        const {name, username, amount, coin} = req.body
+        const user = await User.findOne({username:username})
+        if (!user) return res.status(404).json({ error: errors.NOT_FOUND });
+        const currency = coin as ICoinsKeys
+        user.wallet[currency] += parseFloat(amount)
+        user.purchases.push({amount:parseFloat(amount) || 0, currency:currency, when:new Date().getTime()})
+        await user.save({ validateBeforeSave: false })
+        return res.json(user).status(200)
     }
 }
 export default new UserController()

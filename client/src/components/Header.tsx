@@ -6,7 +6,7 @@ import {
   Box,
   IconButton,
 } from "@material-ui/core";
-import { Person, AccountBalanceWallet } from "@material-ui/icons";
+import { Person, AccountBalanceWallet, TrendingUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../context/UserContext";
 import { Hoverable } from "./Hoverable";
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexFlow: 'row',
     alignItems: 'center',
-    gap: '0.5rem'
+    gap: '1rem'
 
   }
 }));
@@ -48,23 +48,30 @@ const Header: React.FC = () => {
             </Typography>
           </Box>
           <Box className={classes.row}>
+              <Hoverable href="/trade" text="Trade" anchorOrigin={{vertical:35, horizontal:'left'}}>
+                <Box style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
+                  <TrendingUp style={{marginRight:"5px"}} />
+                  <span>Trade</span>
+                </Box>
+              </Hoverable>
             {user && 
               <Hoverable
+                anchorOrigin={{vertical:35, horizontal:'left'}}
+                href="/wallet"
                 textHeader={<b style={{paddingRight:'24px'}}
                 >My Wallet:</b>} text={`US$${moneyfy(user.wallet.USD)}\n£${moneyfy(user?.wallet.GBP)}`}>
-              <Typography component="span"
-                style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
-                  <AccountBalanceWallet style={{marginRight:"5px"}} />
-                  
-                  <span data-testid="hoverable">US${ moneyfy(user.wallet.USD)}</span> 
-                
-              </Typography>
-            </Hoverable>
+                  <Box style={{ fontFamily: 'unset', display: 'flex', alignItems: 'center' }}>
+                    <AccountBalanceWallet style={{marginRight:"5px"}} />
+                    <span>US${ moneyfy(user.wallet.USD)}</span> 
+                  </Box>
+              </Hoverable>
             }
+            <Box>
+              <IconButton aria-label="profile" href="/profile">
+                <Person fontSize="inherit" style={{ color: "white" }} />
+              </IconButton>
+            </Box>
             
-            <IconButton aria-label="profile" href="/profile">
-              <Person fontSize="inherit" style={{ color: "white" }} />
-            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
