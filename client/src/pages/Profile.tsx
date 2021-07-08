@@ -24,7 +24,7 @@ const Profile: React.FC<{}> = () => {
   async function update() {
     const response = await fetch("http://localhost:3001/api/user/update",
       {
-        method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
+        method: 'PUT', headers: { 'content-type': 'application/json;charset=UTF-8' },
         body: JSON.stringify({
           _id: user?._id,
           firstName: firstName,
@@ -77,7 +77,7 @@ const Profile: React.FC<{}> = () => {
             <Button variant="contained"
               href="/wallet"
               style={{ marginTop: '20px', minWidth: '200px' }}
-              >{"MY PREVIOUS TRADES"}</Button>
+              >{"PREVIOUS ACTIVITIES"}</Button>
           </Box>
           <Box>
             <Button style={{ marginTop: '20px', minWidth: '120px' }} onClick={()=>history.goBack()}>Go back</Button>

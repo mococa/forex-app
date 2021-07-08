@@ -33,7 +33,6 @@ const Buy: React.FC<{}> = () => {
           username: user.username,
           password,
           name,
-          
           amount,
           coin
         })
@@ -42,9 +41,7 @@ const Buy: React.FC<{}> = () => {
 
 
     if (json.error !== undefined) {
-      json.error.forEach(function (value: string) {
-        alert(value)
-      })
+        alert(json.error)
     } else {
       localStorage.setItem('user', JSON.stringify(json))
       setUser(json as IUser)

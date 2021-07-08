@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Authencticate: React.FC<{}> = () => {
+const Authenctication: React.FC<{}> = () => {
   const [username, setUsername] = useState("user");
   const [email, setEmail] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
@@ -120,13 +120,15 @@ const Authencticate: React.FC<{}> = () => {
       <Box className={classes.box} style={{marginTop:'40px'}}>
         <Box className={classes.col}>
           <Typography variant="h4" data-testid="login-text">Login</Typography>
-          <TextField label="Username" variant="outlined"
+          <TextField label="Username" variant="outlined" data-testid="auth-login-user" 
             onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setUsername(e.target.value as string)} value={username} />
           <TextField type="password" label="Password" variant="outlined"
+          data-testid="auth-login-pass"
             onChange={(e: React.ChangeEvent<{ name?: string; value: unknown }>) => setPassword(e.target.value as string)} value={password} />
           <Button variant="contained" color="primary"
             style={{ minWidth: '200px', marginTop: '8px', padding: '8px' }}
             onClick={async () => await login()}
+            data-testid="auth-login-btn"
           >Login</Button>
           <Box></Box>
         </Box>
@@ -166,4 +168,4 @@ const Authencticate: React.FC<{}> = () => {
   );
 }
 
-export default Authencticate;
+export default Authenctication;

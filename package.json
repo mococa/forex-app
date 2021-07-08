@@ -26,7 +26,8 @@
         "server": "yarn run dev",
         "client": "cd ./client && yarn start",
         "full": "npm-run-all --parallel server client",
-        "dev": "nodemon server/src/server.ts"
+        "dev": "nodemon server/src/server.ts",
+        "test":"cd ./client && yarn run test"
     },
     "name": "module1",
     "version": "1.0.0",

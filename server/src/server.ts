@@ -80,18 +80,29 @@ mongoose.connect('mongodb://localhost/module1', {
         console.log("Error connecting to MongoDB: " + err);
     });
 
-app.get('/', async (req,res)=>{
-    res.json({status:200}) 
+app.get('/', (req,res)=>{
+    res.json({status:200, running:true}) 
 })
 
 app.get('/api/users', User.get)
 
 app.get('/api/user',User.checkVerified, User.mine)
-app.post('/api/users/create', User.create)
+app.get('/api/test/user', User.mine)
+
+app.delete('/api/user/remove', User.remove)
+
+app.post('/api/users/create', User.checkRegisterFields, User.create)
+app.post('/api/test/users/create', User.create, User.verify)
+
 app.post('/api/trade', User.pushTrade)
-app.post('/api/user/update', User.update)   
+
+app.put('/api/user/update', User.update)   
+
 app.post('/api/user/buy', User.addMoney)   
+
 app.get("/time", async (req,res)=>{
+    const timezones = ["Europe/London","America/Sao_Paulo", "America/New_York","Europe/Paris","Asia/Seoul","Asia/Tokyo","Africa/Johannesburg", "Europe/Moscow"]
+    if(!req.query.timezone || !timezones.includes(req.query.timezone as string)) return res.json({error:"Entered timezone is not in the database. Please provide a valid one"})
     const response_time = await fetch(
         "https://www.timeapi.io/api/Time/current/zone?timeZone=" +
           req.query.timezone

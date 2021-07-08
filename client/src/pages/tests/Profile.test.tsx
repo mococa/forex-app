@@ -8,7 +8,7 @@ import { IUser, UserProvider } from "../../context/UserContext";
 
 describe("Profile Page", ()=>{
     beforeAll(()=>{
-        const userInit:IUser = {wallet:{USD:10,GBP:10},timezone:"America/Sao_Paulo",verified:true,_id:"60e126c017581c4aff08605e",username:"testusername",email:"test@gmail.com",firstName:"Test",trades:[]}
+        const userInit:IUser = {purchases:[],wallet:{USD:10,GBP:10},timezone:"America/Sao_Paulo",verified:true,_id:"60e126c017581c4aff08605e",username:"testusername",email:"test@gmail.com",firstName:"Test",trades:[]}
         localStorage.setItem('user', JSON.stringify(userInit))
     })
     test("Checking Profile content", ()=>{
@@ -26,7 +26,6 @@ describe("Profile Page", ()=>{
     expect(linkElement2).toHaveTextContent("testusername")
     const linkElement3 = getByTestId("profile-firstName-value")
     expect(linkElement3).toBeInTheDocument();
-    
     
     })
 })

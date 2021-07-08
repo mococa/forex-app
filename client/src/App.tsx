@@ -2,7 +2,7 @@ import "./App.css";
 import {Route, BrowserRouter as Router, Switch} from "react-router-dom";
 import Home from './pages/Home'
 import Profile from './pages/Profile'
-import Authenticate from './pages/Authenticate'
+import Authentication from './pages/Authentication'
 import Trade from './pages/Trade'
 import _404 from './pages/404'
 import { UserProvider } from "./context/UserContext"
@@ -16,7 +16,7 @@ const App:React.FC<{}> = () =>{
       <Router><UserProvider><Switch>
         <Route exact path="/" component={Home}/>
         <Route exact path="/profile" component={Profile}/>
-        <Route exact path="/auth" component={Authenticate}/>
+        <Route exact path="/auth" component={Authentication}/>
         <Route exact path="/trade" component={Trade}/>
         <Route exact path="/wallet" component={Wallet}/>
         <Route exact path="/confirmed" component={EmailConfirmed}/>
