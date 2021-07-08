@@ -1,5 +1,17 @@
 # Forex App
 
+![Screenshot](./src/images/print1.png)
+
+<details>
+  <summary>More Screenshots</summary>
+  
+  ![Screenshot](./src/images/print4.png)
+  ![Screenshot](./src/images/print2.png)
+  ![Screenshot](./src/images/print3.png)
+  
+</details>
+
+
 ### What is it
 
 This is a Node/React App (both coded in Typescript), that lets user trade USD for GBP and vice-versa with real-time data, which means they have real time information about these currencies values.
