@@ -1,13 +1,13 @@
 # Forex App
 
-![Screenshot](./src/images/print1.png)
+![Screenshot](./src/images/screenshot-1.png)
 
 <details>
   <summary>More Screenshots</summary>
   
-  ![Screenshot](./src/images/print4.png)
-  ![Screenshot](./src/images/print2.png)
-  ![Screenshot](./src/images/print3.png)
+  ![Screenshot](./src/images/screenshot-4.png)
+  ![Screenshot](./src/images/screenshot-2.png)
+  ![Screenshot](./src/images/screenshot-3.png)
   
 </details>
 
@@ -16,11 +16,11 @@
 
 This is a Node/React App (both coded in Typescript), that lets user trade USD for GBP and vice-versa with real-time data, which means they have real time information about these currencies values.
 
-### Why using this
+### Why should you use it
 
 It is easy to implement it and has most of functionalities you may need, such as account management, database schemas, websockets settings, and it is scalable, because it is not hardcoded to support only GBP and USD.
 
-### Which technologies it has used
+### Which technologies it uses
 
 It's made with React, Node, WebSockets, Socket.io, Jest, Express, MongoDB, Mongoose and MaterialUI
 
