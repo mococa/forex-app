@@ -1,11 +1,11 @@
 import "../App.css";
 import {
-  Button, Box,  Dialog, DialogActions,
+  Button, Box, Dialog, DialogActions,
   DialogContent, DialogContentText, DialogTitle, useMediaQuery
 } from "@material-ui/core"
 import { green, pink } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
-import {  XAxis, YAxis, CartesianGrid, Bar, Tooltip, ComposedChart, ResponsiveContainer } from "recharts";
+import { XAxis, YAxis, CartesianGrid, Bar, Tooltip, ComposedChart, ResponsiveContainer } from "recharts";
 import { TradeContext, ITrade } from "../context/TradeContext"
 import { UserContext, IUser, } from "../context/UserContext";
 import { useState, useEffect, useReducer, useContext } from "react";
@@ -43,10 +43,12 @@ const TradeComp: React.FC<{}> = () => {
   const { trades, invertedTrades } = useContext(TradeContext);
   const classes = useStyles();
   const { user, setUser } = useContext(UserContext)
+  // CLICKED ON BUY OR SELL
   const [traded, setTraded] = useState({ traded: false, buy: false, _for: 0 });
+  // DEFAULT TRADE ORDER
   const [default_order, setOrder] = useState<ICurrencies>({ from: 'GBP', to: 'USD' })
   const [lastTrade, setLastTrade] = useState<ITrade>()
-  //const [currentTr, setCurrentTr] = useState<ITrade[] | undefined>(undefined)
+  // CURRENT TRADE
   const [currentTr, setCurrentTr] = useReducer((state: ITrade[] | undefined, action: { type: string; trades?: ITrade[] }) => {
     if (action.type === 'SET_CURRENT') {
       state = action.trades
@@ -62,15 +64,14 @@ const TradeComp: React.FC<{}> = () => {
         to: default_order.to,
         tradeAtTime: lastTrade
       }
-      const response = await fetch("http://localhost:3001/api/trade",
-        {
-          method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
-          body: JSON.stringify({
-            trade: tradePayload,
-            _id: user._id,
-            buy
-          })
-        });
+      const response = await fetch("http://localhost:3001/api/trade", {
+        method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
+        body: JSON.stringify({
+          trade: tradePayload,
+          _id: user._id,
+          buy
+        })
+      });
       const json = await response.json()
       if (json.error !== undefined) {
         alert(json.error)
@@ -80,8 +81,6 @@ const TradeComp: React.FC<{}> = () => {
       }
     }
   }
-
-  //const [currentTrade, setCurrentTrade] = useState<ITrade[]>(trades || [])
   useEffect(() => {
     if (trades && currentTr) setLastTrade(currentTr[currentTr.length - 1])
   }, [trades, currentTr])
@@ -101,7 +100,7 @@ const TradeComp: React.FC<{}> = () => {
           </Button>
         </Box>
         <Box>
-          <ResponsiveContainer width={matches?"60%":"90%"} height={250} className={classes.chart}>
+          <ResponsiveContainer width={matches ? "60%" : "90%"} height={250} className={classes.chart}>
             <ComposedChart data={currentTr} >
               <XAxis tickMargin={10} height={28} dataKey="time" />
               <YAxis tickCount={2} domain={['auto', 'auto']} />

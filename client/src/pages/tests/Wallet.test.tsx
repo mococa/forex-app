@@ -20,14 +20,14 @@ async function createUser(): Promise<boolean> {
         })
     })
     const json = await response.json()
-    console.log(json)
+    //VERIFY
+    await fetch("http://localhost:3001/api/verify/"+json._id+"?test=true")
     if (json.error) {
         console.log(json)
         return false
     }
     const _response = await fetch("http://localhost:3001/api/test/user?" + new URLSearchParams({ username: 'usertest', password: '123' }));
     const user: IUser = await _response.json()
-
     localStorage.setItem('user', JSON.stringify(user));
     return true
 }
@@ -118,6 +118,9 @@ describe("Wallet Page", () => {
         render(<Router><UserProvider><Route component={Wallet} /></UserProvider></Router>);
         const walletCardValues = screen.getAllByRole("wallet-card-value")
         expect(walletCardValues.some(x => x.textContent === "16"))
+    })
+    afterAll(async()=>{
+        await removeUser()
     })
 
 })

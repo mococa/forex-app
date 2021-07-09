@@ -28,7 +28,6 @@ class UserController {
     }
     public async verify(req: Request, res: Response): Promise<Response | void> {
         if(req.query.test) console.info("Verification for tests.")
-
         if (!req.params.id || !isValidObjectId(req.params.id)) return res.json({ error: errors.NOT_FOUND }).status(404)
         const user = await User.findOne({ _id: req.params.id })
         if (!user) return res.json({ error: errors.NOT_FOUND }).status(404)

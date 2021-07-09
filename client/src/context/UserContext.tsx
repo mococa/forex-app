@@ -62,11 +62,15 @@ export const UserProvider = ({children}:Props):JSX.Element =>{
     
     useEffect(() => {
         const localUser = localStorage.getItem('user')
+        
+        // NOT LETTING USER BE SOMEWHERE ELSE THAN /AUTH OR /CONFIRMED WHEN THEY'RE NOT LOGGED IN
         if(!localUser){
           if(location.pathname !== "/auth" && location.pathname !== "/confirmed"){
             history.push("/auth");
           }
         }else{
+
+        // NOT LETTING USER GO TO /AUTH AND /CONFIRMED WHEN THEY'RE LOGGED IN
           setUser(JSON.parse(localUser))
           if(location.pathname === "/auth" || location.pathname === "/confirmed"){
             history.push("/");

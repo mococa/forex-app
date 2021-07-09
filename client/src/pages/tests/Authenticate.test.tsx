@@ -1,20 +1,26 @@
-import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react"
 import "@testing-library/jest-dom/extend-expect"
+import "@testing-library/jest-dom"
+import { createMount } from "@material-ui/core/test-utils";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+
+import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react"
 import Authentication from "../Authentication"
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { IUser, UserProvider } from "../../context/UserContext";
 import { TextField } from "@material-ui/core";
 import userEvent from "@testing-library/user-event";
+import Home from "../Home";
 
 async function register(): Promise<boolean> {
     const response = await fetch("http://localhost:3001/api/test/users/create", {
         method: 'POST', headers: { 'content-type': 'application/json;charset=UTF-8' },
         body: JSON.stringify({
             "testing": true,
-            "username": "usertest",
+            "username": "myusertest",
             "firstName": "my name here",
             "timezone": "America/Sao_Paulo",
-            "email": "myemail",
+            "email": "myemail@email.com",
             "password": "Password@123",
             "passwordConfirmation": "Password@123"
         })
@@ -24,11 +30,27 @@ async function register(): Promise<boolean> {
         console.log(json)
         return false
     }
+    await fetch("http://localhost:3001/api/verify/"+json._id+"?test=true")
+    const _response = await fetch("http://localhost:3001/api/test/user?" + new URLSearchParams({ username: 'usertest', password: '123' }));
+    const user: IUser = await _response.json()
+    localStorage.setItem('user', JSON.stringify(user));
     return true
+}
+async function removeUser() {
+    await fetch("http://localhost:3001/api/user/remove", {
+        method: 'DELETE', headers: { 'content-type': 'application/json;charset=UTF-8' },
+        body: JSON.stringify({
+            "username": "myusertest",
+            "password": "Password@123"
+        })
+    })
+    localStorage.removeItem('user');
 }
 
 describe("Authentication Page", () => {
-    
+    beforeAll(async()=>{
+        await removeUser()
+    })
     it("should render Authentication content", () => {
         render(<Router><UserProvider><Route component={Authentication} /></UserProvider></Router>);
         
@@ -38,38 +60,22 @@ describe("Authentication Page", () => {
         const linkElement2 = screen.getByText(/register/i);
         expect(linkElement2).toBeInTheDocument();
     })
-    it("should not let user log in if they're not signed up", async () => {
-        //const inputs = screen.debug(TextField)
-        //console.log(wrapper.find('TextField').debug());
-
-        //expect(wrapper.find(TextField).props().value).to.equal('');
-        render(<Router><UserProvider><Route component={Authentication} /></UserProvider></Router>);
-        
-        
-
-        //userEvent.
-
-        //const inputLoginUsername = screen.getByTestId('auth-login-user')
-        //userEvent.type(screen.getAllByRole('textbox')[0], "usertestt")
-        fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: 'Sama' } });
-
-        
-        //fireEvent.change(inputLoginUsername, { target: { value: "usertest" } });
-
-        //const inputLoginPassword = screen.getByTestId('auth-login-pass')
-        userEvent.type(screen.getAllByRole('textbox')[1], "Password@123")
-
-        //fireEvent.change(inputLoginPassword, { target: { value: "Password@123" } });
-
-        const loginButton = screen.getByTestId('auth-login-btn')
-        fireEvent.click(loginButton)
-
-        await waitFor(()=>console.log(screen.getAllByRole('textbox').length),{timeout:500})
-        //console.log(screen.getAllByRole('textbox').length)
-
-        //expect(loginButton).not.toBeInTheDocument()
-
-        expect(true).toBeTruthy()
-
+    it("should only let user log in if they're not logged in", () => {
+        render(<Router><UserProvider><Route component={Authentication} /><Route component={Home} /></UserProvider></Router>);
+        const login = screen.getAllByText(/login/i)[0]
+        expect(login).toBeInTheDocument()
+    })
+    it("should not let user log in if they're logged in", async () => {
+        await register()
+        render(<Router><UserProvider><Switch>
+            <Route exact path="/" component={Home}/>
+            <Route exact path="/auth" component={Authentication}/>
+            </Switch>
+            </UserProvider></Router>);
+        const login = screen.queryAllByText(/login/i)[0]
+        expect(login).toBeUndefined()
+    })
+    afterAll(async()=>{
+        await removeUser()
     })
 })
