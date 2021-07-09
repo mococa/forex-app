@@ -20,6 +20,10 @@ interface IChart {
     money: number;
     time: number;
 }
+interface IChartData{
+    money:number,
+    time:string
+}
 interface MyCustomCSS extends CSSProperties {
     '--selected-color': string;
 }
@@ -29,17 +33,15 @@ const Wallet: React.FC<Props> = ({fetchUser}) => {
     const { user,setUser } = useContext(UserContext)
     const [currencyIndex, setCurrencyIndex] = useState(-1)
     const colors = ["#2ec27e", "#c061cb", "#f6d32d", "#ed333b"]
-    const [goingCurrency, setGoingCurrency] = useState<IChart[]>([]) // Current currency on chart.
+    const [goingCurrency, setGoingCurrency] = useState<IChartData[]>([]) // Current currency on chart.
 
     async function login() {
         if(user && user._id){
-            console.log(user._id)
             const response = await fetch("http://localhost:3001/api/test/user?" +
             new URLSearchParams({
                 _id:user?._id as string
             }));
             const json = await response.json()
-            console.log(json)
             if (json.error !== undefined) {
                 alert(json.error)
                 console.error(json.error)
@@ -90,10 +92,23 @@ const Wallet: React.FC<Props> = ({fetchUser}) => {
 
             // Iterating through walletHistory and summing all previous "money" property to current one
             // I.E: [ {money:1}, {money:2}, {money:3} ] => [ {money:1}, {money:3}, {money:6} ]
+            
             const moneyData = walletHistory.map((x, i) => walletHistory.slice(0, i + 1).reduce((a, b) => ({ money: a.money + b.money, time: walletHistory[i].time })))
 
+            // Check whether or not timestamp is today
+            const isToday = (date:number) => {
+                const today = new Date()
+                return new Date(date).getDate() === today.getDate() &&
+                    new Date(date).getMonth() === today.getMonth() &&
+                    new Date(date).getFullYear() === today.getFullYear();
+            };
+
             //We put it on a chart, so we can see it better.
-            setGoingCurrency(moneyData as IChart[])
+            setGoingCurrency(moneyData.map(x=>({money:x.money, time:
+                // Checking if it's today so we put the time of the day instead of the date
+                isToday(x.time) ? new Date(x.time).toLocaleTimeString(navigator.language, {timeZone:user.timezone}) :
+                new Date(x.time).toLocaleDateString(navigator.language, {timeZone:user.timezone, month: "2-digit", day: "2-digit",year: 'numeric'})
+            })) as IChartData[])
         }
 
 

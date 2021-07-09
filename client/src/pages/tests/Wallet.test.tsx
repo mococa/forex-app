@@ -103,7 +103,7 @@ describe("Wallet Page", () => {
             expect(screen.getByText("Buy more here")).toBeInTheDocument()
         });
     })
-    test("should change wallet content after a trade", async () => {
+    it("should change wallet content after a trade", async () => {
         await pushTrade()
         render(<Router><UserProvider><Route component={Wallet} /></UserProvider></Router>);
         

@@ -6,8 +6,8 @@ import { useContext, useState } from "react";
 import { IUser, UserContext } from "../context/UserContext";
 import { useHistory  } from 'react-router-dom'
 const Buy: React.FC<{}> = () => {
-  const [name, setName] = useState("")
   
+  const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [coin, setCoin] = useState('USD')
   const [amount, setAmount] = useState('10')
