@@ -17,7 +17,6 @@ const VerificationInput = ({setValue, label,error, type,regex}:MyInput) =>{
     return (
       <>
         <TextField
-        style={{marginTop:"8px"}}
         fullWidth
         inputRef={textRef} 
         type={type||"text"}
