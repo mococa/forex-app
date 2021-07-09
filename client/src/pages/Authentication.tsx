@@ -29,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Authenctication: React.FC<{}> = () => {
-  const [username, setUsername] = useState("user");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
-  const [password, setPassword] = useState("Luiz@123")
+  const [password, setPassword] = useState("")
   const [registerPassword, setRegisterPassword] = useState("")
   const [registerPasswordConfirmation, setRegisterPasswordConfirmation] = useState("")
   const [firstName, setFirstName] = useState("");
