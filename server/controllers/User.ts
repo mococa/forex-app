@@ -105,7 +105,6 @@ class UserController {
     public async mine(req: Request, res: Response): Promise<Response> {
 
         const queryLookup = req.query.username !== undefined ? {username:req.query.username as string} : {_id:req.query._id as string}
-        console.log(queryLookup)
 
         const user = await User.findOne(queryLookup)
         if (!user) return res.json({ error: errors.NOT_FOUND }).status(404)

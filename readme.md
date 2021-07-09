@@ -130,6 +130,10 @@ run `yarn run server`
 
 run `yarn run client`
 
+#### Test
+
+run `yarn run test`
+
 
 # API
 
